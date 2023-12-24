@@ -135,7 +135,7 @@ local function choose_node(nodes, opts)
 	-- early return of the current choice
 	-- when choice is nil or choice is made by a label without upper case (e.g., 1, 2, 3, !, @, ...),
 	if not first_choice or first_label:lower() == first_label:upper() then
-		return first_choice
+		return first_choice[3]
 	end
 
 	local ambiguity = positions[first_choice[1]][first_choice[2]]
