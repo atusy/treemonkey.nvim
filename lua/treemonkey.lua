@@ -52,6 +52,24 @@ local function find_nodes(ignore_injections)
 	return nodes
 end
 
+--- Get range of a TSNode
+---
+--- In some cases, TSNode:range() gives 0 as a column of the end position.
+--- This may cause strange selection e.g., in a markdown code block with injection
+--[[
+``` lua
+print("foo")
+```
+]]
+local function range(node)
+	local srow, scol, erow, ecol = node:range()
+	if ecol == 0 and erow > srow then
+		erow = erow - 1
+		ecol = string.len(vim.api.nvim_buf_get_lines(0, erow, erow + 1, true)[1])
+	end
+	return srow, scol, erow, ecol
+end
+
 ---@param nodes TSNode[]
 ---@return TSNode?
 local function choose_node(nodes)
@@ -68,7 +86,7 @@ local function choose_node(nodes)
 		end
 
 		-- let node be a choice if the range differs from the range of the previously marked node
-		local srow, scol, erow, ecol = node:range()
+		local srow, scol, erow, ecol = range(node)
 		if psrow ~= srow or pscol ~= scol or perow ~= erow or pecol ~= ecol then
 			psrow, pscol, perow, pecol = srow, scol, erow, ecol
 			for _, v in pairs({ { srow, scol, labels[cnt] }, { erow, ecol - 1, labels[cnt]:upper() } }) do
@@ -106,7 +124,7 @@ local function choose_node(nodes)
 	vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
 	mark_selection(first_choice[3])
 	for _, v in pairs(ambiguity) do
-		local srow, scol, erow, ecol = v.node:range()
+		local srow, scol, erow, ecol = range(v.node)
 		mark_label(srow, scol, v.label)
 		mark_label(erow, ecol - 1, v.label:upper())
 	end
