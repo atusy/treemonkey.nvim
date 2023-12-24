@@ -25,7 +25,7 @@ It's like monkey hanging around the Abstract Syntax Tree. Isn't it?
 
 ```lua
 vim.keymap.set({"x", "o"}, "m", function()
-    require("treemonkey").select({ ignore_injections = false })
+  require("treemonkey").select({ ignore_injections = false })
 end)
 ```
 
@@ -36,7 +36,7 @@ With [lazy.nvim](https://github.com/folke/lazy.nvim/), ...
   "https://github.com/atusy/treemonkey.nvim",
   init = function()
     vim.keymap.set({"x", "o"}, "m", function()
-        require("treemonkey").select({ ignore_injections = false })
+      require("treemonkey").select({ ignore_injections = false })
     end)
   end
 }
