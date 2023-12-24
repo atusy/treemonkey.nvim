@@ -4,7 +4,7 @@ Yet another label-based node selection plugin.
 
 There are some cases that start or end of the node position overlaps with the other nodes.
 If labels are overlayed, there is a difficulty on selecting the intended one (e.g., [nvim-treehopper](https://github.com/mfussenegger/nvim-treehopper) or [leap-ast.nvim](https://github.com/ggandor/leap-ast.nvim)).
-If labels are inserted inline, your eyes may fail to track the node(e.g., [flash.nvim](https://github.com/folke/flash.nvim)).
+If labels are inserted inline, your eyes may fail to track the node (e.g., [flash.nvim](https://github.com/folke/flash.nvim)).
 
 Instead, this plugin does...
 
