@@ -40,7 +40,7 @@ end
 
 ---@param ignore_injections boolean
 ---@return TSNode[]
-local function find_nodes(ignore_injections)
+local function gather_nodes(ignore_injections)
 	local nodes = {} ---@type TSNode[]
 
 	if not ignore_injections then
@@ -160,7 +160,7 @@ end
 
 function M.get(opts)
 	opts = opts or {}
-	local node = choose_node(find_nodes(opts.ignore_injections))
+	local node = choose_node(gather_nodes(opts.ignore_injections))
 	vim.api.nvim_buf_clear_namespace(0, M.namepace, 0, -1)
 	vim.cmd.redraw()
 	return node
