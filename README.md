@@ -28,3 +28,16 @@ vim.keymap.set({"x", "o"}, "m", function()
     require("treemonkey").select({ ignore_injections = false })
 end)
 ```
+
+With [lazy.nvim](https://github.com/folke/lazy.nvim/), ...
+
+```lua
+{
+  "https://github.com/atusy/treemonkey.nvim",
+  init = function()
+    vim.keymap.set({"x", "o"}, "m", function()
+        require("treemonkey").select({ ignore_injections = false })
+    end)
+  end
+}
+```
