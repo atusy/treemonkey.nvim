@@ -1,4 +1,6 @@
-local ns = vim.api.nvim_create_namespace("treemonkey")
+local M = {}
+
+M.namepace = vim.api.nvim_create_namespace("treemonkey")
 
 -- stylua: ignore
 local labels = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
@@ -8,7 +10,7 @@ local labels = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
 ---@param txt string
 ---@param hi? string
 local function mark_label(row, col, txt, hi)
-	vim.api.nvim_buf_set_extmark(0, ns, row, col, {
+	vim.api.nvim_buf_set_extmark(0, M.namepace, row, col, {
 		virt_text = { { txt, hi or "@text.warning" } },
 		virt_text_pos = "overlay",
 	})
@@ -18,7 +20,7 @@ end
 ---@param hi? string
 local function mark_selection(node, hi)
 	local srow, scol, erow, ecol = node:range()
-	vim.api.nvim_buf_set_extmark(0, ns, srow, scol, {
+	vim.api.nvim_buf_set_extmark(0, M.namepace, srow, scol, {
 		end_row = erow,
 		end_col = ecol,
 		hl_group = hi or "Visual",
@@ -121,7 +123,7 @@ local function choose_node(nodes)
 		return ambiguity[1].node
 	end
 
-	vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+	vim.api.nvim_buf_clear_namespace(0, M.namepace, 0, -1)
 	mark_selection(first_choice[3])
 	for _, v in pairs(ambiguity) do
 		local srow, scol, erow, ecol = range(v.node)
@@ -138,21 +140,26 @@ local function choose_node(nodes)
 	end
 end
 
-local function select(opts)
+function M.get(opts)
 	opts = opts or {}
-	local ok, result = pcall(choose_node, find_nodes(opts.ignore_injections))
-	vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+	local node = choose_node(find_nodes(opts.ignore_injections))
+	vim.api.nvim_buf_clear_namespace(0, M.namepace, 0, -1)
 	vim.cmd.redraw()
+	return node
+end
+
+function M.select(opts)
+	local ok, result = pcall(M.get, opts)
 	if ok then
 		if result then
 			require("nvim-treesitter.ts_utils").update_selection(0, result)
 		end
 	else
+		vim.api.nvim_buf_clear_namespace(0, M.namepace, 0, -1)
+		vim.cmd.redraw()
 		---@diagnostic disable-next-line: param-type-mismatch
 		vim.notify(result, vim.log.levels.ERROR)
 	end
 end
 
-return {
-	select = select,
-}
+return M
