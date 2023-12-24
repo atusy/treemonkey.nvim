@@ -3,7 +3,7 @@ local M = {}
 M.namepace = vim.api.nvim_create_namespace("treemonkey")
 
 -- stylua: ignore
-local labels = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
+local labels_default = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
 
 ---@return string?
 local function getcharstr()
@@ -84,17 +84,20 @@ local function range(node)
 end
 
 ---@param nodes TSNode[]
+---@param opts TreemonkeyOpts
 ---@return TSNode?
-local function choose_node(nodes)
+local function choose_node(nodes, opts)
+	--[[ prep ]]
 	---@type table<string, { [1]: integer, [2]: integer, [3]: TSNode }>
 	local labelled = {}
 	---@type table<integer, table<integer, {node: TSNode, label: string}[]>>
 	local positions = {}
 
+	--[[ first choice ]]
 	local psrow, pscol, perow, pecol ---@type integer?, integer?, integer?, integer?
 	for cnt, node in ipairs(nodes) do
 		-- stop labelling if no more labels are available
-		if not labels[cnt] then
+		if not opts.labels[cnt] then
 			break
 		end
 
@@ -102,19 +105,20 @@ local function choose_node(nodes)
 		local srow, scol, erow, ecol = range(node)
 		if psrow ~= srow or pscol ~= scol or perow ~= erow or pecol ~= ecol then
 			psrow, pscol, perow, pecol = srow, scol, erow, ecol
-			for _, v in pairs({ { srow, scol, labels[cnt] }, { erow, ecol - 1, labels[cnt]:upper() } }) do
-				local row, col, label = v[1], v[2], v[3]
-				labelled[label] = { row, col, node }
-				if not positions[row] then
-					positions[row] = {}
+			for _, v in pairs({
+				{ row = srow, col = scol, label = opts.labels[cnt], hi = opts.highlight.label },
+				{ row = erow, col = ecol, label = opts.labels[cnt]:upper(), hi = opts.highlight.label },
+			}) do
+				labelled[v.label] = { v.row, v.col, node }
+				if not positions[v.row] then
+					positions[v.row] = {}
 				end
 
-				--
-				if positions[row][col] then
-					table.insert(positions[row][col], { node = node, label = label })
+				if positions[v.row][v.col] then
+					table.insert(positions[v.row][v.col], { node = node, label = v.label })
 				else
-					positions[row][col] = { { node = node, label = label } }
-					mark_label(row, col, label)
+					positions[v.row][v.col] = { { node = node, label = v.label } }
+					mark_label(v.row, v.col, v.label, v.hi)
 				end
 			end
 		end
@@ -128,8 +132,10 @@ local function choose_node(nodes)
 
 	local first_choice = labelled[first_label]
 
-	if not first_choice then
-		return
+	-- early return of the current choice
+	-- when choice is nil or choice is made by a label without upper case (e.g., 1, 2, 3, !, @, ...),
+	if not first_choice or first_label:lower() == first_label:upper() then
+		return first_choice
 	end
 
 	local ambiguity = positions[first_choice[1]][first_choice[2]]
@@ -137,12 +143,13 @@ local function choose_node(nodes)
 		return ambiguity[1].node
 	end
 
+	--[[ second choice ]]
 	vim.api.nvim_buf_clear_namespace(0, M.namepace, 0, -1)
 	mark_selection(first_choice[3])
 	for _, v in pairs(ambiguity) do
 		local srow, scol, erow, ecol = range(v.node)
-		mark_label(srow, scol, v.label)
-		mark_label(erow, ecol - 1, v.label:upper())
+		mark_label(srow, scol, v.label, opts.highlight.label)
+		mark_label(erow, ecol - 1, v.label:upper(), opts.highlight.label)
 	end
 	vim.cmd.redraw()
 
@@ -158,14 +165,30 @@ local function choose_node(nodes)
 	end
 end
 
+---@class TreemonkeyOpts
+---@field highlight { label: string }
+---@field ignore_injections? boolean
+---@field labels string[]
+
+---@param opts? TreemonkeyOpts
+---@return TreemonkeyOpts
+local function init_opts(opts)
+	return vim.tbl_deep_extend("keep", opts or {}, {
+		highlight = { label = "@text.warning" },
+		labels = labels_default,
+	})
+end
+
+---@param opts TreemonkeyOpts?
 function M.get(opts)
-	opts = opts or {}
-	local node = choose_node(gather_nodes(opts.ignore_injections))
+	opts = init_opts(opts)
+	local node = choose_node(gather_nodes(opts.ignore_injections), opts)
 	vim.api.nvim_buf_clear_namespace(0, M.namepace, 0, -1)
 	vim.cmd.redraw()
 	return node
 end
 
+---@param opts TreemonkeyOpts?
 function M.select(opts)
 	local ok, result = pcall(M.get, opts)
 	if ok then
