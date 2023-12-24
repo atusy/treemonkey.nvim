@@ -5,6 +5,17 @@ M.namepace = vim.api.nvim_create_namespace("treemonkey")
 -- stylua: ignore
 local labels = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
 
+---@return string?
+local function getcharstr()
+	local ok, res = pcall(vim.fn.getcharstr)
+	if ok then
+		return res
+	elseif res ~= nil then
+		vim.notify(res, vim.log.levels.ERROR)
+		return
+	end
+end
+
 ---@param row integer
 ---@param col integer
 ---@param txt string
@@ -110,7 +121,10 @@ local function choose_node(nodes)
 	end
 
 	vim.cmd.redraw()
-	local first_label = vim.fn.getcharstr()
+	local first_label = getcharstr()
+	if not first_label then
+		return
+	end
 
 	local first_choice = labelled[first_label]
 
@@ -132,7 +146,11 @@ local function choose_node(nodes)
 	end
 	vim.cmd.redraw()
 
-	local second_label = vim.fn.getcharstr()
+	local second_label = getcharstr()
+	if not second_label then
+		return
+	end
+
 	for _, v in pairs(ambiguity) do
 		if v.label:lower() == second_label:lower() then
 			return v.node
