@@ -101,6 +101,10 @@ local function choose_node(nodes, opts)
 			break
 		end
 
+		if not opts.include_root and #nodes == cnt and node.id == nodes[#nodes]:tree():root().id then
+			break
+		end
+
 		-- let node be a choice if the range differs from the range of the previously marked node
 		local srow, scol, erow, ecol = range(node)
 		if psrow ~= srow or pscol ~= scol or perow ~= erow or pecol ~= ecol then
@@ -168,6 +172,7 @@ end
 ---@class TreemonkeyOpts
 ---@field highlight { label: string }
 ---@field ignore_injections? boolean
+---@field include_root? boolean
 ---@field labels string[]
 
 ---@param opts? TreemonkeyOpts
