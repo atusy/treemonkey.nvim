@@ -136,9 +136,12 @@ local function choose_node(nodes, opts)
 
 	local first_choice = labelled[first_label]
 
-	-- early return of the current choice
-	-- when choice is nil or choice is made by a label without upper case (e.g., 1, 2, 3, !, @, ...),
-	if not first_choice or first_label:lower() == first_label:upper() then
+	if not first_choice then
+		return nil
+	end
+
+	-- if choice is made by a label without upper case (e.g., 1, 2, 3, !, @, ...),
+	if first_label:lower() == first_label:upper() then
 		return first_choice[3]
 	end
 
