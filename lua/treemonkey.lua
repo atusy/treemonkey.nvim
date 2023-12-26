@@ -16,13 +16,10 @@ local function getcharstr()
 	end
 end
 
----@param row integer
----@param col integer
----@param txt string
----@param hi? string
-local function mark_label(row, col, txt, hi)
-	vim.api.nvim_buf_set_extmark(0, M.namepace, row, col, {
-		virt_text = { { txt, hi or "@text.warning" } },
+---@param opts { row: integer, col: integer, label: string, hi?: string, buf?: integer }
+local function mark_label(opts)
+	vim.api.nvim_buf_set_extmark(opts.buf or 0, M.namepace, opts.row, opts.col, {
+		virt_text = { { opts.label, opts.hi or "@text.warning" } },
 		virt_text_pos = "overlay",
 	})
 end
@@ -83,6 +80,29 @@ local function range(node)
 	return srow, scol, erow, ecol
 end
 
+---@param opts { row: integer, col: integer, label: string, hi?: string, buf: integer, ctx: Range4[] }
+local function mark_treesitter_context(opts)
+	for i, v in ipairs(opts.ctx) do
+		if v[1] == opts.row then
+			mark_label(vim.tbl_extend("force", opts, { row = i - 1 }))
+		end
+	end
+end
+
+local function get_treesitter_context()
+	for _, w in pairs(vim.api.nvim_tabpage_list_wins(0)) do
+		if vim.w[w].treesitter_context then
+			return {
+				buf = vim.api.nvim_win_get_buf(w),
+				ranges = require("treesitter-context.context").get(
+					vim.api.nvim_get_current_buf(),
+					vim.api.nvim_get_current_win()
+				),
+			}
+		end
+	end
+end
+
 ---@param nodes TSNode[]
 ---@param opts TreemonkeyOpts
 ---@return TSNode?
@@ -92,6 +112,7 @@ local function choose_node(nodes, opts)
 	local labelled = {}
 	---@type table<integer, table<integer, {node: TSNode, label: string}[]>>
 	local positions = {}
+	local context = opts.experimental.treesitter_context and get_treesitter_context() or {}
 
 	--[[ first choice ]]
 	local psrow, pscol, perow, pecol ---@type integer?, integer?, integer?, integer?
@@ -122,7 +143,13 @@ local function choose_node(nodes, opts)
 					table.insert(positions[v.row][v.col], { node = node, label = v.label })
 				else
 					positions[v.row][v.col] = { { node = node, label = v.label } }
-					mark_label(v.row, v.col, v.label, v.hi)
+					local o = { row = v.row, col = v.col, label = v.label, hi = v.hi }
+					mark_label(o)
+					if context.buf then
+						o.buf = context.buf
+						o.ctx = context.ranges
+						mark_treesitter_context(o)
+					end
 				end
 			end
 		end
@@ -155,8 +182,17 @@ local function choose_node(nodes, opts)
 	mark_selection(first_choice[3])
 	for _, v in pairs(ambiguity) do
 		local srow, scol, erow, ecol = range(v.node)
-		mark_label(srow, scol, v.label, opts.highlight.label)
-		mark_label(erow, ecol - 1, v.label:upper(), opts.highlight.label)
+		for _, o in pairs({
+			{ row = srow, col = scol, label = v.label, hi = opts.highlight.label },
+			{ row = erow, col = ecol - 1, label = v.label:upper(), hi = opts.highlight.label },
+		}) do
+			mark_label(o)
+			if context.buf then
+				o.buf = context.buf
+				o.ctx = context.ranges
+				mark_treesitter_context(o)
+			end
+		end
 	end
 	vim.cmd.redraw()
 
@@ -177,6 +213,7 @@ end
 ---@field ignore_injections? boolean
 ---@field include_root? boolean
 ---@field labels string[]
+---@field experimental { treesitter_context: boolean }
 
 ---@param opts? TreemonkeyOpts
 ---@return TreemonkeyOpts
@@ -184,6 +221,7 @@ local function init_opts(opts)
 	return vim.tbl_deep_extend("keep", opts or {}, {
 		highlight = { label = "@text.warning" },
 		labels = labels_default,
+		experimental = {},
 	})
 end
 
