@@ -2,6 +2,18 @@ local M = {}
 
 M.namepace = vim.api.nvim_create_namespace("treemonkey")
 
+local function clear(bufs)
+	for _, b in pairs(bufs) do
+		vim.api.nvim_buf_clear_namespace(b, M.namepace, 0, -1)
+	end
+end
+
+local function clear_tabpage()
+	for _, w in pairs(vim.api.nvim_tabpage_list_wins(0)) do
+		vim.api.nvim_buf_clear_namespace(vim.api.nvim_win_get_buf(w), M.namepace, 0, -1)
+	end
+end
+
 -- stylua: ignore
 local labels_default = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
 
@@ -178,7 +190,7 @@ local function choose_node(nodes, opts)
 	end
 
 	--[[ second choice ]]
-	vim.api.nvim_buf_clear_namespace(0, M.namepace, 0, -1)
+	clear({ 0, context.buf })
 	mark_selection(first_choice[3])
 	for _, v in pairs(ambiguity) do
 		local srow, scol, erow, ecol = range(v.node)
@@ -229,7 +241,7 @@ end
 function M.get(opts)
 	opts = init_opts(opts)
 	local node = choose_node(gather_nodes(opts.ignore_injections), opts)
-	vim.api.nvim_buf_clear_namespace(0, M.namepace, 0, -1)
+	clear_tabpage()
 	vim.cmd.redraw()
 	return node
 end
@@ -242,7 +254,7 @@ function M.select(opts)
 			require("nvim-treesitter.ts_utils").update_selection(0, result)
 		end
 	else
-		vim.api.nvim_buf_clear_namespace(0, M.namepace, 0, -1)
+		clear_tabpage()
 		vim.cmd.redraw()
 		---@diagnostic disable-next-line: param-type-mismatch
 		vim.notify(result, vim.log.levels.ERROR)
