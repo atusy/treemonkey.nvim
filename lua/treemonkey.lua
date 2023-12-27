@@ -220,14 +220,6 @@ local function choose_node(nodes, opts)
 	end
 end
 
----@class TreemonkeyOpts
----@field filter? fun(nodes: TSNode[]): TSNode[] A function to fileter candidate nodes
----@field highlight { label: string }
----@field ignore_injections? boolean
----@field include_root? boolean
----@field labels string[]
----@field experimental { treesitter_context: boolean }
-
 ---@param opts? TreemonkeyOpts
 ---@return TreemonkeyOpts
 local function init_opts(opts)
