@@ -1,16 +1,16 @@
 local M = {}
 
-M.namepace = vim.api.nvim_create_namespace("treemonkey")
+M.namespace = vim.api.nvim_create_namespace("treemonkey")
 
 local function clear(bufs)
 	for _, b in pairs(bufs) do
-		vim.api.nvim_buf_clear_namespace(b, M.namepace, 0, -1)
+		vim.api.nvim_buf_clear_namespace(b, M.namespace, 0, -1)
 	end
 end
 
 local function clear_tabpage()
 	for _, w in pairs(vim.api.nvim_tabpage_list_wins(0)) do
-		vim.api.nvim_buf_clear_namespace(vim.api.nvim_win_get_buf(w), M.namepace, 0, -1)
+		vim.api.nvim_buf_clear_namespace(vim.api.nvim_win_get_buf(w), M.namespace, 0, -1)
 	end
 end
 
@@ -30,7 +30,7 @@ end
 
 ---@param opts { row: integer, col: integer, label: string, hi?: string, buf?: integer }
 local function mark_label(opts)
-	vim.api.nvim_buf_set_extmark(opts.buf or 0, M.namepace, opts.row, opts.col, {
+	vim.api.nvim_buf_set_extmark(opts.buf or 0, M.namespace, opts.row, opts.col, {
 		virt_text = { { opts.label, opts.hi or "@text.warning" } },
 		virt_text_pos = "overlay",
 	})
@@ -40,7 +40,7 @@ end
 ---@param hi? string
 local function mark_selection(node, hi)
 	local srow, scol, erow, ecol = node:range()
-	vim.api.nvim_buf_set_extmark(0, M.namepace, srow, scol, {
+	vim.api.nvim_buf_set_extmark(0, M.namespace, srow, scol, {
 		end_row = erow,
 		end_col = ecol,
 		hl_group = hi or "Visual",
