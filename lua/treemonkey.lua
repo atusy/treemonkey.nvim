@@ -89,7 +89,7 @@ local function range(node)
 		erow = erow - 1
 		ecol = string.len(vim.api.nvim_buf_get_lines(0, erow, erow + 1, true)[1])
 	end
-	return srow, scol, erow, ecol
+	return srow, scol, erow, ecol - 1
 end
 
 ---@param opts { row: integer, col: integer, label: string, hi?: string, buf: integer, ctx: Range4[] }
@@ -196,7 +196,7 @@ local function choose_node(nodes, opts)
 		local srow, scol, erow, ecol = range(v.node)
 		for _, o in pairs({
 			{ row = srow, col = scol, label = v.label, hi = opts.highlight.label },
-			{ row = erow, col = ecol - 1, label = v.label:upper(), hi = opts.highlight.label },
+			{ row = erow, col = ecol, label = v.label:upper(), hi = opts.highlight.label },
 		}) do
 			mark_label(o)
 			if context.buf then
