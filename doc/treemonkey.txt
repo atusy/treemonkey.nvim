@@ -6,6 +6,7 @@ License: MIT <https://github.com/atusy/treemonkey.nvim/blob/main/LICENSE>
 
 See https://github.com/atusy/treemonkey.nvim/ for animated examples.
 
+
 ==============================================================================
 CONTENTS                                                 *treemonkey-contents*
 
@@ -16,6 +17,10 @@ MODULES AND FUNCTIONS     |treemonkey-modules-and-functions|
   treemonkey.select()     |treemonkey.select()|
 FUNCTION PARAMTERS        |treemonkey-function-parameters|
   TreemonkeyOpts          |TreemonkeyOpts|
+EXAMPLES                  |treemonkey-examples|
+  Select a node           |treemonkey-example-select-node|
+  Fold a node             |treemonkey-example-fold-node|
+
 
 ==============================================================================
 SETUP                                                       *treemonkey-setup*
@@ -37,6 +42,7 @@ choice comes from a node on the cursor and its parent nodes.
     },
   }, {})
 <
+
 
 ==============================================================================
 MODULES AND FUNCTIONS                       *treemonkey-modules-and-functions*
@@ -60,7 +66,6 @@ Select a range of the chosen node in |Visual-mode| or |Operator-pending-mode|.
 >lua
   require("treemonkey").select  ---@type fun(opts: TreemonkeyOpts): nil
 <
-
 
 
 ==============================================================================
@@ -90,6 +95,52 @@ Options to be passed to |treemonkey.get()| or |treemonkey.select()|.
   ---@class TreemonkeyOpts.highlight Highlight groups
   ---@field label string A highlight group for the labels
 <
+
+
+==============================================================================
+EXAMPLES                                                 *treemonkey-examples*
+
+
+------------------------------------------------------------------------------
+                                                   *treemonkey-example-select*
+Select a node in |Visual-mode| or |Operator-pending-mode|.
+
+>lua
+  vim.keymap.set({ "x", "o" }, "m", function()
+    require("treemonkey").select({
+      ignore_injections = false,
+      experimental = { treesitter_context = true },
+    })
+  end)
+<
+
+------------------------------------------------------------------------------
+                                                     *treemonkey-example-fold*
+Fold a node when |'foldmethod'| is manual.
+
+>lua
+  vim.opt.foldmethod = "manual"
+
+  -- Overwrite `zf` mapping to create fold on a selected node.
+  vim.keymap.set("n", "zf", "zfV<Plug>(treemonkey-multiline)")
+  vim.keymap.set("o", "<Plug>(treemonkey-multiline)", function()
+    require("treemonkey").select({
+      ignore_injections = false,
+      -- reduce choice by a filter that only accepts multiline nodes
+      filter = function(nodes)
+        local res = {}
+        for _, n in pairs(nodes) do
+          local srow, _, erow, ecol = n:range()
+          if erow > (srow + (ecol == 0 and 1 or 0)) then
+            table.insert(res, n)
+          end
+        end
+        return res
+      end,
+    })
+  end)
+<
+
 
 ==============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

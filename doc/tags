@@ -1,6 +1,9 @@
 TreemonkeyOpts	treemonkey.txt	/*TreemonkeyOpts*
 treemonkey	treemonkey.txt	/*treemonkey*
 treemonkey-contents	treemonkey.txt	/*treemonkey-contents*
+treemonkey-example-fold	treemonkey.txt	/*treemonkey-example-fold*
+treemonkey-example-select	treemonkey.txt	/*treemonkey-example-select*
+treemonkey-examples	treemonkey.txt	/*treemonkey-examples*
 treemonkey-function-parameters	treemonkey.txt	/*treemonkey-function-parameters*
 treemonkey-modules-and-functions	treemonkey.txt	/*treemonkey-modules-and-functions*
 treemonkey-setup	treemonkey.txt	/*treemonkey-setup*
