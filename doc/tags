@@ -1,0 +1,10 @@
+TreemonkeyOpts	treemonkey.txt	/*TreemonkeyOpts*
+treemonkey	treemonkey.txt	/*treemonkey*
+treemonkey-contents	treemonkey.txt	/*treemonkey-contents*
+treemonkey-function-parameters	treemonkey.txt	/*treemonkey-function-parameters*
+treemonkey-modules-and-functions	treemonkey.txt	/*treemonkey-modules-and-functions*
+treemonkey-setup	treemonkey.txt	/*treemonkey-setup*
+treemonkey.get()	treemonkey.txt	/*treemonkey.get()*
+treemonkey.nvim	treemonkey.txt	/*treemonkey.nvim*
+treemonkey.select()	treemonkey.txt	/*treemonkey.select()*
+treemonkey.txt	treemonkey.txt	/*treemonkey.txt*

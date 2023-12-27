@@ -1,0 +1,95 @@
+*treemonkey.txt*    Label-based motions on treesitter nodes.
+*treemonkey.nvim*
+
+Author: atusy
+License: MIT <https://github.com/atusy/treemonkey.nvim/blob/main/LICENSE>
+
+See https://github.com/atusy/treemonkey.nvim/ for animated examples.
+
+==============================================================================
+CONTENTS                                                 *treemonkey-contents*
+
+SETUP                     |treemonkey-setup|
+MODULES AND FUNCTIONS     |treemonkey-modules-and-functions|
+  treemonkey              |treemonkey|
+  treemonkey.get()        |treemonkey.get()|
+  treemonkey.select()     |treemonkey.select()|
+FUNCTION PARAMTERS        |treemonkey-function-parameters|
+  TreemonkeyOpts          |TreemonkeyOpts|
+
+==============================================================================
+SETUP                                                       *treemonkey-setup*
+
+With |lazy.nvim.txt| from https://github.com/folke/lazy.nvim/ , users can
+easily setup a mapping to select a region of a node using label-hints. The
+choice comes from a node on the cursor and its parent nodes.
+
+>lua
+  require("lazy").setup({
+    {
+      "https://github.com/atusy/treemonkey.nvim",
+      deps = { "https://github.com/nvim-treesitter/nvim-treesitter" }
+      init = function()
+        vim.keymap.set({ "x", "o" }, "m", function()
+          require("treemonkey").select({ ignore_injections = false })
+        end)
+      end,
+    },
+  }, {})
+<
+
+==============================================================================
+MODULES AND FUNCTIONS                       *treemonkey-modules-and-functions*
+
+
+------------------------------------------------------------------------------
+*treemonkey*
+
+*treemonkey.get()*
+
+Get a chosen node.
+
+>lua
+  require("treemonkey").get  ---@type fun(opts: TreemonkeyOpts): TSNode
+<
+
+*treemonkey.select()*
+
+Select a range of the chosen node in |Visual-mode| or |Operator-pending-mode|.
+
+>lua
+  require("treemonkey").select  ---@type fun(opts: TreemonkeyOpts): nil
+<
+
+
+
+==============================================================================
+FUNCTION PARAMETERS                           *treemonkey-function-parameters*
+
+
+------------------------------------------------------------------------------
+*TreemonkeyOpts*
+
+Options to be passed to |treemonkey.get()| or |treemonkey.select()|.
+
+>lua
+  ---@class TreemonkeyOpts
+  ---  A table of options 
+  ---@field filter? fun(nodes: TSNode[]): TSNode[]
+  ---  A function to fileter candidate nodes
+  ---@field highlight TreemonkeyOpts.highlight
+  ---@field ignore_injections? boolean
+  ---  Whether or not (default) to ignore injected language
+  ---@field include_root? boolean
+  ---  Whether or not (default) to include the root node in a choice
+  ---@field labels string[]
+  ---  A list of labels for selecting nodes. Defaults to a-z
+  ---@field experimental { treesitter_context: boolean }
+  ---  Options for experimental features
+
+  ---@class TreemonkeyOpts.highlight Highlight groups
+  ---@field label string A highlight group for the labels
+<
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
