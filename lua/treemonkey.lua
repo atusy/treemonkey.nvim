@@ -221,6 +221,7 @@ local function choose_node(nodes, opts)
 end
 
 ---@class TreemonkeyOpts
+---@field filter? fun(nodes: TSNode[]): TSNode[] A function to fileter candidate nodes
 ---@field highlight { label: string }
 ---@field ignore_injections? boolean
 ---@field include_root? boolean
@@ -240,7 +241,8 @@ end
 ---@param opts TreemonkeyOpts?
 function M.get(opts)
 	opts = init_opts(opts)
-	local node = choose_node(gather_nodes(opts.ignore_injections), opts)
+	local nodes = gather_nodes(opts.ignore_injections)
+	local node = choose_node(opts.filter and opts.filter(nodes) or nodes, opts)
 	clear_tabpage()
 	vim.cmd.redraw()
 	return node
