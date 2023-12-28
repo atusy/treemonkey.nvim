@@ -117,13 +117,11 @@ end
 
 ---@param nodes TSNode[]
 ---@param opts TreemonkeyOpts
----@return TSNode?
+---@return TreemonkeyItem?
 local function choose_node(nodes, opts)
 	--[[ prep ]]
-	---@type table<string, { [1]: integer, [2]: integer, [3]: TSNode }>
-	local labelled = {}
-	---@type table<integer, table<integer, {node: TSNode, label: string}[]>>
-	local positions = {}
+	local labelled = {} ---@type table<string, TreemonkeyItem>
+	local positions = {} ---@type table<integer, table<integer, TreemonkeyItem[]>>
 	local context = opts.experimental.treesitter_context and get_treesitter_context() or {}
 
 	--[[ first choice ]]
@@ -146,15 +144,16 @@ local function choose_node(nodes, opts)
 				{ row = srow, col = scol, label = opts.labels[cnt], hi = opts.highlight.label },
 				{ row = erow, col = ecol, label = opts.labels[cnt]:upper(), hi = opts.highlight.label },
 			}) do
-				labelled[v.label] = { v.row, v.col, node }
+				local item = { row = v.row, col = v.col, node = node, label = v.label }
+				labelled[v.label] = item
 				if not positions[v.row] then
 					positions[v.row] = {}
 				end
 
 				if positions[v.row][v.col] then
-					table.insert(positions[v.row][v.col], { node = node, label = v.label })
+					table.insert(positions[v.row][v.col], item)
 				else
-					positions[v.row][v.col] = { { node = node, label = v.label } }
+					positions[v.row][v.col] = { item }
 					local o = { row = v.row, col = v.col, label = v.label, hi = v.hi }
 					mark_label(o)
 					if context.buf then
@@ -181,17 +180,17 @@ local function choose_node(nodes, opts)
 
 	-- if choice is made by a label without upper case (e.g., 1, 2, 3, !, @, ...),
 	if first_label:lower() == first_label:upper() then
-		return first_choice[3]
+		return first_choice
 	end
 
-	local ambiguity = positions[first_choice[1]][first_choice[2]]
+	local ambiguity = positions[first_choice.row][first_choice.col]
 	if #ambiguity == 1 then
-		return ambiguity[1].node
+		return ambiguity[1]
 	end
 
 	--[[ second choice ]]
 	clear({ 0, context.buf })
-	mark_selection(first_choice[3])
+	mark_selection(first_choice.node)
 	for _, v in pairs(ambiguity) do
 		local srow, scol, erow, ecol = range(v.node)
 		for _, o in pairs({
@@ -215,7 +214,7 @@ local function choose_node(nodes, opts)
 
 	for _, v in pairs(ambiguity) do
 		if v.label:lower() == second_label:lower() then
-			return v.node
+			return v
 		end
 	end
 end
@@ -231,21 +230,23 @@ local function init_opts(opts)
 end
 
 ---@param opts TreemonkeyOpts?
+---@return TreemonkeyItem?
 function M.get(opts)
 	opts = init_opts(opts)
 	local nodes = gather_nodes(opts.ignore_injections)
-	local node = choose_node(opts.filter and opts.filter(nodes) or nodes, opts)
+	local item = choose_node(opts.filter and opts.filter(nodes) or nodes, opts)
 	clear_tabpage()
 	vim.cmd.redraw()
-	return node
+	return item
 end
 
 ---@param opts TreemonkeyOpts?
+---@return nil
 function M.select(opts)
 	local ok, result = pcall(M.get, opts)
 	if ok then
 		if result then
-			require("nvim-treesitter.ts_utils").update_selection(0, result)
+			require("nvim-treesitter.ts_utils").update_selection(0, result.node)
 		end
 	else
 		clear_tabpage()

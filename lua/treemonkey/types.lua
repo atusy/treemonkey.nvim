@@ -8,3 +8,9 @@
 
 ---@class TreemonkeyOpts.highlight Highlight groups
 ---@field label string A highlight group for the labels
+
+---@class TreemonkeyItem
+---@field row integer
+---@field col integer
+---@field label string
+---@field node TSNode
