@@ -120,6 +120,25 @@ local function get_treesitter_context()
 	end
 end
 
+---@param nodes TSNode
+---@return integer, integer
+local function iterate(nodes, include_root)
+	local N = #nodes
+
+	local start = 1
+	if N > 1 then
+		local range1 = { range(nodes[1]) }
+		if range1[1] == range1[3] and range1[2] == range1[4] then
+			start = 2
+		end
+	end
+
+	local nodeN = nodes[N]
+	local end_ = (not include_root and nodeN:equal(nodeN:tree():root())) and (N - 1) or N
+
+	return start, end_ > start and end_ or start
+end
+
 ---@param nodes TSNode[]
 ---@param opts TreemonkeyOpts
 ---@return TreemonkeyItem?
@@ -139,15 +158,16 @@ local function choose_node(nodes, opts)
 
 	--[[ first choice ]]
 	local cnt, psrow, pscol, perow, pecol = 1, -1, -1, -1, -1
-	for idx, node in ipairs(nodes) do
-		local label = opts.labels[cnt]
-
-		-- stop labelling if no more labels are available or if need to exclude root node
-		if not label or (not opts.include_root and #nodes == idx and node:equal(node:tree():root())) then
+	local start, end_ = iterate(nodes, opts.include_root)
+	for idx = start, end_, 1 do
+		-- stop labelling if no more labels are available
+		if cnt > #opts.labels then
 			break
 		end
 
 		-- let node be a choice if the range differs from the range of the previously marked node
+		local node = nodes[idx]
+		local label = opts.labels[cnt]
 		local srow, scol, erow, ecol = range(node)
 		if (psrow ~= srow or pscol ~= scol or perow ~= erow or pecol ~= ecol) and (srow ~= erow or scol ~= ecol) then
 			for _, v in pairs({
