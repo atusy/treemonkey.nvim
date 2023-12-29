@@ -178,7 +178,7 @@ local function choose_node(nodes, opts)
 	local first_choice = labelled[first_label]
 
 	if not first_choice then
-		return nil
+		return
 	end
 
 	-- if choice is made by a label without upper case (e.g., 1, 2, 3, !, @, ...),
