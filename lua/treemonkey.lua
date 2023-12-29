@@ -252,7 +252,7 @@ function M.select(opts)
 	local ok, result = pcall(M.get, opts)
 	if ok then
 		if result then
-			require("nvim-treesitter.ts_utils").update_selection(0, result.node)
+			(opts and opts.action or require("treemonkey.actions").update_selection)(result)
 		end
 	else
 		clear_tabpage()
