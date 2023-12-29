@@ -105,6 +105,9 @@ Options to be passed to |treemonkey.get()| or |treemonkey.select()|.
   ---  Whether or not (default) to include the root node in a choice
   ---@field labels string[]
   ---  A list of labels for selecting nodes. Defaults to a-z
+  ---@field steps? 1 | 2
+  ---  Number of steps to choose a node. `nil` (default) for automatic
+  ---  decision based on the ambiguity of the first selection.
   ---@field experimental { treesitter_context: boolean }
   ---  Options for experimental features
 
