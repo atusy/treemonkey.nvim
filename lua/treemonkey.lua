@@ -190,7 +190,9 @@ local function choose_node(nodes, opts)
 
 	--[[ second choice ]]
 	clear({ 0, context.buf })
-	mark_selection(first_choice.node)
+	if opts.highlight.first_node then
+		mark_selection(first_choice.node, opts.highlight.first_node)
+	end
 	for _, v in pairs(ambiguity) do
 		local srow, scol, erow, ecol = range(v.node)
 		for _, o in pairs({
