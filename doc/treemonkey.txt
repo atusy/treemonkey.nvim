@@ -19,8 +19,9 @@ TYPE DEFINITIONS          |treemonkey-type-definitions|
   TreemonkeyItem          |TreemonkeyItem|
   TreemonkeyOpts          |TreemonkeyOpts|
 EXAMPLES                  |treemonkey-examples|
-  Select a node           |treemonkey-example-select-node|
-  Fold a node             |treemonkey-example-fold-node|
+  Select a node           |treemonkey-example-select|
+  Jump to a node          |treemonkey-example-jump|
+  Fold a node             |treemonkey-example-fold|
 
 
 ==============================================================================
@@ -71,9 +72,50 @@ See |TreemonkeyOpts| for the type definition of the parameter.
 <
 
 
+------------------------------------------------------------------------------
+*treemonkey.action*
+
+Provides |TreemonkeyAction| functions to be specified to
+|TreemonkeyOpts|.action parameter for the |treemonkey.select()|.
+
+*treemonkey.action.update_selection*
+
+Updates the range of selection to the selected node. This is the default
+action.
+
+>lua
+  ---@type fun(item: TreemonkeyItem): nil
+  require("treemonkey.action").update_selection
+<
+
+*treemonkey.action.unite_selection*
+
+Unit the range of selection with the current range of selection.
+
+>lua
+  ---@type fun(item: TreemonkeyItem): nil
+  require("treemonkey.action").unite_selection
+<
+
+*treemonkey.action.jumo*
+
+Jump to the edge of a selected range.
+
+>lua
+  ---@type fun(item: TreemonkeyItem): nil
+  require("treemonkey.action").jump
+<
+
 ==============================================================================
 TYPE DEFINITIONS                                 *treemonkey-type-definitions*
 
+
+------------------------------------------------------------------------------
+*TreemonkeyAction*
+
+>lua
+  ---@type fun(item: TreemonkeyItem): any
+<
 
 ------------------------------------------------------------------------------
 *TreemonkeyItem*
@@ -136,6 +178,20 @@ Select a node in |Visual-mode| or |Operator-pending-mode|.
       experimental = { treesitter_context = true },
     })
   end)
+<
+
+------------------------------------------------------------------------------
+                                                     *treemonkey-example-jump*
+Jump to an edge of a node.
+
+In this case, setting |TreemonkeyOpts|.steps to 1 is recommended because the
+ambiguity of the selected node does not matter.
+
+>lua
+  require("treemonkey").select({
+    action = require("treemonkey.action").jump,
+    steps = 1,
+  })
 <
 
 ------------------------------------------------------------------------------
