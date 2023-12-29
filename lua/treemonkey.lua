@@ -129,7 +129,8 @@ local function choose_node(nodes, opts)
 	--[[ first choice ]]
 	local first_marks = { [0] = {} } ---@type table<integer, integer[]>
 	local psrow, pscol, perow, pecol ---@type integer?, integer?, integer?, integer?
-	for cnt, node in ipairs(nodes) do
+	local cnt = 1
+	for _, node in ipairs(nodes) do
 		-- stop labelling if no more labels are available
 		if not opts.labels[cnt] then
 			break
@@ -141,7 +142,7 @@ local function choose_node(nodes, opts)
 
 		-- let node be a choice if the range differs from the range of the previously marked node
 		local srow, scol, erow, ecol = range(node)
-		if psrow ~= srow or pscol ~= scol or perow ~= erow or pecol ~= ecol then
+		if (psrow ~= srow or pscol ~= scol or perow ~= erow or pecol ~= ecol) and (srow ~= erow or scol ~= ecol) then
 			psrow, pscol, perow, pecol = srow, scol, erow, ecol
 			for _, v in pairs({
 				{ row = srow, col = scol, label = opts.labels[cnt], hi = opts.highlight.label },
@@ -166,6 +167,7 @@ local function choose_node(nodes, opts)
 					end
 				end
 			end
+			cnt = cnt + 1
 		end
 	end
 
