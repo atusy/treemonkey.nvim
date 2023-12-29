@@ -202,12 +202,7 @@ local function choose_node(nodes, opts)
 	end
 
 	--[[ second choice ]]
-	-- clean up the extmarks from the first choice
-	for buf, marks in pairs(first_marks) do
-		for _, m in pairs(marks) do
-			vim.api.nvim_buf_del_extmark(buf, M.namespace, m)
-		end
-	end
+	clear_tabpage()
 
 	-- highlight first choice
 	if opts.highlight.first_node then
