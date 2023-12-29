@@ -152,13 +152,12 @@ local function choose_node(nodes, opts)
 	local positions = {} ---@type table<integer, table<integer, TreemonkeyItem[]>>
 	local context = opts.experimental.treesitter_context and get_treesitter_context() or nil
 
-	if opts.highlight.backdrop then
-		mark_node(nodes[#nodes], opts.highlight.backdrop)
-	end
-
 	--[[ first choice ]]
 	local cnt, psrow, pscol, perow, pecol = 1, -1, -1, -1, -1
 	local start, end_ = iterate(nodes, opts.include_root)
+	if opts.highlight.backdrop then
+		mark_node(nodes[end_], opts.highlight.backdrop)
+	end
 	for idx = start, end_, 1 do
 		-- stop labelling if no more labels are available
 		if cnt > #opts.labels then
