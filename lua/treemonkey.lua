@@ -214,7 +214,7 @@ local function choose_node(nodes, opts)
 
 	for _, v in pairs(ambiguity) do
 		if v.label:lower() == second_label:lower() then
-			return v
+			return labelled[second_label]
 		end
 	end
 end
