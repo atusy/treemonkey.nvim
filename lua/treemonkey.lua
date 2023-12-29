@@ -185,18 +185,13 @@ local function choose_node(nodes, opts)
 		return
 	end
 
-	-- if choice is made by a label without upper case (e.g., 1, 2, 3, !, @, ...),
-	if opts.steps == 1 or first_label:lower() == first_label:upper() then
-		return first_choice
-	end
-
 	local ambiguity = positions[first_choice.row][first_choice.col]
-	if opts.steps == nil and #ambiguity == 1 then
-		return ambiguity[1]
-	end
-
-	if opts.steps ~= nil and opts.steps ~= 2 then
-		error("TreemonkeyOpts.steps should be one of nil, 1 or 2")
+	if
+		opts.steps == 1 -- user wants to explicitly stop at here
+		or first_label:lower() == first_label:upper() -- choice is made by a label without upper case (e.g, 1, !, ...)
+		or (opts.steps == nil and #ambiguity == 1) -- second step is not required
+	then
+		return first_choice
 	end
 
 	--[[ second choice ]]
@@ -244,11 +239,17 @@ end
 ---@param opts? TreemonkeyOpts
 ---@return TreemonkeyOpts
 local function init_opts(opts)
-	return vim.tbl_deep_extend("keep", opts or {}, {
+	local o = vim.tbl_deep_extend("keep", opts or {}, {
 		highlight = { label = "@text.warning" },
 		labels = labels_default,
 		experimental = {},
 	})
+
+	if o.steps ~= nil and o.steps ~= 1 and o.steps ~= 2 then
+		error("TreemonkeyOpts.steps should be one of nil, 1 or 2")
+	end
+
+	return o
 end
 
 ---@param opts TreemonkeyOpts?
