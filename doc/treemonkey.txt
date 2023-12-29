@@ -56,7 +56,9 @@ MODULES AND FUNCTIONS                       *treemonkey-modules-and-functions*
 Get a chosen node.
 
 >lua
-  require("treemonkey").get  ---@type fun(opts: TreemonkeyOpts): TSNode
+  ---@param opts: TreemonkeyOpts
+  ---@return { row: integer, col: integer, label: string, node: TSNode }
+  require("treemonkey").get
 <
 
 *treemonkey.select()*
