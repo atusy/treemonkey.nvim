@@ -178,10 +178,7 @@ Select a node in |Visual-mode| or |Operator-pending-mode|.
 
 >lua
   vim.keymap.set({ "x", "o" }, "m", function()
-    require("treemonkey").select({
-      ignore_injections = false,
-      experimental = { treesitter_context = true },
-    })
+    require("treemonkey").select({ ignore_injections = false })
   end)
 <
 
