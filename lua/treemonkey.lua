@@ -38,7 +38,7 @@ end
 
 ---@param node TSNode
 ---@param hi? string
-local function mark_selection(node, hi)
+local function mark_node(node, hi)
 	local srow, scol, erow, ecol = node:range()
 	return vim.api.nvim_buf_set_extmark(0, M.namespace, srow, scol, {
 		end_row = erow,
@@ -125,9 +125,13 @@ local function choose_node(nodes, opts)
 	local labelled = {} ---@type table<string, TreemonkeyItem>
 	local positions = {} ---@type table<integer, table<integer, TreemonkeyItem[]>>
 	local context = opts.experimental.treesitter_context and get_treesitter_context() or {}
+	local first_marks = { [0] = {} } ---@type table<integer, integer[]>
+
+	if opts.highlight.backdrop then
+		table.insert(first_marks[0], mark_node(nodes[#nodes], opts.highlight.backdrop))
+	end
 
 	--[[ first choice ]]
-	local first_marks = { [0] = {} } ---@type table<integer, integer[]>
 	local psrow, pscol, perow, pecol ---@type integer?, integer?, integer?, integer?
 	local cnt = 1
 	for _, node in ipairs(nodes) do
@@ -198,19 +202,17 @@ local function choose_node(nodes, opts)
 	end
 
 	--[[ second choice ]]
-	-- clean up
-	for buf, marks in pairs(first_marks) do
-		for _, m in pairs(marks) do
-			vim.api.nvim_buf_del_extmark(buf, M.namespace, m)
-		end
-	end
-
 	-- highlight first choice
 	if opts.highlight.first_node then
-		mark_selection(first_choice.node, opts.highlight.first_node)
+		mark_node(first_choice.node, opts.highlight.first_node)
 	end
 
-	-- ask for the second choice to solve the ambiguity
+	-- add new backdrop
+	if opts.highlight.backdrop then
+		mark_node(ambiguity[#ambiguity].node, opts.highlight.backdrop)
+	end
+
+	-- prepare labels for the second choice
 	for _, v in pairs(ambiguity) do
 		local srow, scol, erow, ecol = range(v.node)
 		for _, o in pairs({
@@ -226,6 +228,13 @@ local function choose_node(nodes, opts)
 		end
 	end
 	vim.cmd.redraw()
+
+	-- clean up the extmarks from the first choice
+	for buf, marks in pairs(first_marks) do
+		for _, m in pairs(marks) do
+			vim.api.nvim_buf_del_extmark(buf, M.namespace, m)
+		end
+	end
 
 	local second_label = getcharstr()
 	if not second_label then

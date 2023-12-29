@@ -159,6 +159,10 @@ Options to be passed to |treemonkey.get()| or |treemonkey.select()|.
   ---  Options for experimental features
 
   ---@class TreemonkeyOpts.highlight Highlight groups
+  ---@field backdrop string?
+  ---  A highlight group to be applied to the largest range of the node
+  ---  of the choice during the selection. If `nil` (default)  applies
+  ---  no highlight. "Commment" is commonly used.
   ---@field first_node string?
   ---  A highlight group for the labels of the first selection until the
   ---  second selection is done. If `nil` (default) applies no highlight.
