@@ -97,7 +97,7 @@ local function mark_treesitter_context(opts)
 	return marks
 end
 
----@return { buf: number, ranges: Range4 }?
+---@return { buf: number, ranges: Range4[] }?
 local function get_treesitter_context()
 	for _, w in pairs(vim.api.nvim_tabpage_list_wins(0)) do
 		if vim.w[w].treesitter_context then
