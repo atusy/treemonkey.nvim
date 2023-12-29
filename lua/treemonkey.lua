@@ -122,7 +122,7 @@ local function choose_node(nodes, opts)
 	--[[ prep ]]
 	local labelled = {} ---@type table<string, TreemonkeyItem>
 	local positions = {} ---@type table<integer, table<integer, TreemonkeyItem[]>>
-	local context = opts.experimental.treesitter_context and get_treesitter_context()
+	local context = opts.experimental.treesitter_context and get_treesitter_context() or nil
 
 	if opts.highlight.backdrop then
 		mark_node(nodes[#nodes], opts.highlight.backdrop)
