@@ -218,7 +218,7 @@ local function choose_node(nodes, opts)
 	for _, v in pairs(ambiguity) do
 		local srow, scol, erow, ecol = range(v.node)
 		for _, o in pairs({
-			{ row = srow, col = scol, label = v.label, hi = opts.highlight.label },
+			{ row = srow, col = scol, label = v.label:lower(), hi = opts.highlight.label },
 			{ row = erow, col = ecol, label = v.label:upper(), hi = opts.highlight.label },
 		}) do
 			mark_label(o)
