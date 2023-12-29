@@ -2,12 +2,6 @@ local M = {}
 
 M.namespace = vim.api.nvim_create_namespace("treemonkey")
 
-local function clear(bufs)
-	for _, b in pairs(bufs) do
-		vim.api.nvim_buf_clear_namespace(b, M.namespace, 0, -1)
-	end
-end
-
 local function clear_tabpage()
 	for _, w in pairs(vim.api.nvim_tabpage_list_wins(0)) do
 		vim.api.nvim_buf_clear_namespace(vim.api.nvim_win_get_buf(w), M.namespace, 0, -1)
@@ -103,6 +97,7 @@ local function mark_treesitter_context(opts)
 	return marks
 end
 
+---@return { buf: number, ranges: Range4 }?
 local function get_treesitter_context()
 	for _, w in pairs(vim.api.nvim_tabpage_list_wins(0)) do
 		if vim.w[w].treesitter_context then
@@ -124,7 +119,7 @@ local function choose_node(nodes, opts)
 	--[[ prep ]]
 	local labelled = {} ---@type table<string, TreemonkeyItem>
 	local positions = {} ---@type table<integer, table<integer, TreemonkeyItem[]>>
-	local context = opts.experimental.treesitter_context and get_treesitter_context() or {}
+	local context = opts.experimental.treesitter_context and get_treesitter_context()
 
 	if opts.highlight.backdrop then
 		mark_node(nodes[#nodes], opts.highlight.backdrop)
@@ -163,7 +158,7 @@ local function choose_node(nodes, opts)
 					positions[v.row][v.col] = { item }
 					local o = { row = v.row, col = v.col, label = v.label, hi = v.hi }
 					mark_label(o)
-					if context.buf then
+					if context then
 						o.buf = context.buf
 						o.ctx = context.ranges
 						mark_treesitter_context(o)
@@ -201,7 +196,10 @@ local function choose_node(nodes, opts)
 	end
 
 	--[[ second choice ]]
-	clear_tabpage()
+	vim.api.nvim_buf_clear_namespace(0, M.namespace, 0, -1)
+	if context then
+		vim.api.nvim_buf_clear_namespace(context.buf, M.namespace, 0, -1)
+	end
 
 	-- highlight first choice
 	if opts.highlight.first_node then
@@ -221,7 +219,7 @@ local function choose_node(nodes, opts)
 			{ row = erow, col = ecol, label = v.label:upper(), hi = opts.highlight.label },
 		}) do
 			mark_label(o)
-			if context.buf then
+			if context then
 				o.buf = context.buf
 				o.ctx = context.ranges
 				mark_treesitter_context(o)
