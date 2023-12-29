@@ -32,8 +32,11 @@ local function mark_label(buf, opts)
 end
 
 ---@param node TSNode
----@param hi string
+---@param hi? string
 local function mark_node(node, hi)
+	if not hi then
+		return
+	end
 	local srow, scol, erow, ecol = node:range()
 	return vim.api.nvim_buf_set_extmark(0, M.namespace, srow, scol, {
 		end_row = erow,
@@ -155,9 +158,7 @@ local function choose_node(nodes, opts)
 	--[[ first choice ]]
 	local cnt, psrow, pscol, perow, pecol = 1, -1, -1, -1, -1
 	local start, end_ = iterate(nodes, opts.include_root)
-	if opts.highlight.backdrop then
-		mark_node(nodes[end_], opts.highlight.backdrop)
-	end
+	mark_node(nodes[end_], opts.highlight.backdrop)
 	for idx = start, end_, 1 do
 		-- stop labelling if no more labels are available
 		if cnt > #opts.labels then
@@ -223,18 +224,12 @@ local function choose_node(nodes, opts)
 		vim.api.nvim_buf_clear_namespace(context.buf, M.namespace, 0, -1)
 	end
 
-	-- highlight first choice
-	if opts.highlight.first_selected_node then
-		mark_node(first_choice.node, opts.highlight.first_selected_node)
-	end
+	-- highlight backdrop and first choice
+	mark_node(ambiguity[#ambiguity].node, opts.highlight.backdrop)
+	mark_node(first_choice.node, opts.highlight.first_selected_node)
 	local opts_first_label = vim.tbl_extend("force", first_choice, { hi = opts.highlight.first_selected_label })
 	mark_label(0, opts_first_label)
 	mark_treesitter_context(context, opts_first_label)
-
-	-- add new backdrop
-	if opts.highlight.backdrop then
-		mark_node(ambiguity[#ambiguity].node, opts.highlight.backdrop)
-	end
 
 	-- prepare labels for the second choice
 	for _, v in pairs(ambiguity) do
