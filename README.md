@@ -15,7 +15,7 @@ Instead, this plugin does...
 
 It's like monkey hanging around the Abstract Syntax Tree. Isn't it?
 
-![Example](https://github.com/atusy/treemonkey.nvim/assets/30277794/42aceb5e-0efc-40a3-8d3c-0ab5e56e43ac)
+![Example](https://private-user-images.githubusercontent.com/30277794/293306161-dc892ccb-a303-4232-abf4-1e56f9b4dc76.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDM4MjE2MzgsIm5iZiI6MTcwMzgyMTMzOCwicGF0aCI6Ii8zMDI3Nzc5NC8yOTMzMDYxNjEtZGM4OTJjY2ItYTMwMy00MjMyLWFiZjQtMWU1NmY5YjRkYzc2LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyMzEyMjklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjI5VDAzNDIxOFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTljZTM2YzM2ZmU3NzI2ZTlkNTE4NjFhYTk1Y2MyZGVlNzAyMjhlYjU4Yzc0ZWNkMWZlMWJlOGU4MzZjNmM5ZWImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.wZ60-wv8rqTv1vHvatPARiMj_6gH3kKZ70PuE1Cy9us)
 
 ## Example
 
@@ -23,7 +23,7 @@ It's like monkey hanging around the Abstract Syntax Tree. Isn't it?
 vim.keymap.set({"x", "o"}, "m", function()
   require("treemonkey").select({
     ignore_injections = false,
-    highlight = { first_choice = "Visual" }
+    highlight = { backdrop = "Comment" }
   })
 end)
 ```
