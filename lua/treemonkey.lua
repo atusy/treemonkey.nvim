@@ -89,7 +89,7 @@ local function range(node)
 		erow = erow - 1
 		ecol = string.len(vim.api.nvim_buf_get_lines(0, erow, erow + 1, true)[1])
 	end
-	return srow, scol, erow, ecol - 1
+	return srow, scol, erow, ecol == 0 and 0 or (ecol - 1)
 end
 
 ---@param opts { row: integer, col: integer, label: string, hi?: string, buf: integer, ctx: Range4[] }
