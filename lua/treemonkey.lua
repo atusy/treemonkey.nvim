@@ -31,7 +31,7 @@ local function mark_label(opts)
 end
 
 ---@param node TSNode
----@param hi? string
+---@param hi string
 local function mark_node(node, hi)
 	local srow, scol, erow, ecol = node:range()
 	return vim.api.nvim_buf_set_extmark(0, M.namespace, srow, scol, {
@@ -77,6 +77,8 @@ end
 print("foo")
 ```
 ]]
+---@param node TSNode
+---@return integer, integer, integer, integer
 local function range(node)
 	local srow, scol, erow, ecol = node:range()
 	if ecol == 0 and erow > srow then
@@ -87,6 +89,7 @@ local function range(node)
 end
 
 ---@param opts { row: integer, col: integer, label: string, hi?: string, buf: integer, ctx: Range4[] }
+---@return integer[]
 local function mark_treesitter_context(opts)
 	local marks = {}
 	for i, v in ipairs(opts.ctx) do
@@ -97,7 +100,7 @@ local function mark_treesitter_context(opts)
 	return marks
 end
 
----@return { buf: number, ranges: Range4[] }?
+---@return { buf: integer, ranges: Range4[] }?
 local function get_treesitter_context()
 	for _, w in pairs(vim.api.nvim_tabpage_list_wins(0)) do
 		if vim.w[w].treesitter_context then
