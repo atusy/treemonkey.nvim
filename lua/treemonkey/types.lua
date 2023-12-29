@@ -7,6 +7,7 @@
 ---@field experimental { treesitter_context: boolean } Options for experimental features
 
 ---@class TreemonkeyOpts.highlight Highlight groups
+---@field first_node string A highlight group for the node of the first selection
 ---@field label string A highlight group for the labels
 
 ---@class TreemonkeyItem
