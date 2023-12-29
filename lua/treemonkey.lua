@@ -277,8 +277,4 @@ function M.select(opts)
 	end
 end
 
-vim.keymap.set({ "n", "x", "o" }, "  ", function()
-	M.select()
-end)
-
 return M
