@@ -124,6 +124,10 @@ end
 ---@param opts TreemonkeyOpts
 ---@return TreemonkeyItem?
 local function choose_node(nodes, opts)
+	if #nodes == 0 then
+		return
+	end
+
 	--[[ prep ]]
 	local labelled = {} ---@type table<string, TreemonkeyItem>
 	local positions = {} ---@type table<integer, table<integer, TreemonkeyItem[]>>
