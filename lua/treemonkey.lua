@@ -179,13 +179,17 @@ local function choose_node(nodes, opts)
 	end
 
 	-- if choice is made by a label without upper case (e.g., 1, 2, 3, !, @, ...),
-	if first_label:lower() == first_label:upper() then
+	if opts.steps == 1 or first_label:lower() == first_label:upper() then
 		return first_choice
 	end
 
 	local ambiguity = positions[first_choice.row][first_choice.col]
-	if #ambiguity == 1 then
+	if opts.steps == nil and #ambiguity == 1 then
 		return ambiguity[1]
+	end
+
+	if opts.steps ~= nil and opts.steps ~= 2 then
+		error("TreemonkeyOpts.steps should be one of nil, 1 or 2")
 	end
 
 	--[[ second choice ]]

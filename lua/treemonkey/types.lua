@@ -4,6 +4,7 @@
 ---@field ignore_injections? boolean Whether or not (default) to ignore injected language
 ---@field include_root? boolean Whether or not (default) to include the root node in a choice
 ---@field labels string[] A list of labels for selecting nodes. Defaults to a-z
+---@field steps? 1 | 2 Number of steps to choose a node. `nil` (default) for automatic decision
 ---@field experimental { treesitter_context: boolean } Options for experimental features
 
 ---@class TreemonkeyOpts.highlight Highlight groups
