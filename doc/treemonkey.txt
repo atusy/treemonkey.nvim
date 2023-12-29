@@ -164,11 +164,15 @@ Options to be passed to |treemonkey.get()| or |treemonkey.select()|.
   ---  of the choice during the selection. If `nil` (default)  applies
   ---  no highlight. "Commment" is commonly used.
   ---@field first_node string?
-  ---  A highlight group for the labels of the first selection until the
-  ---  second selection is done. If `nil` (default) applies no highlight.
-  ---  Setting this to "Visual" might be helpful when trying to select a
-  ---  range in charwise.
-  ---@field label string A highlight group for the labels
+  ---  DEPRECATED. Use first_selected_node instead.
+  ---@field first_selected_node? string
+  ---  A highlight group for the first selected node. If `nil` (default)
+  ---  applies no highlight. Setting this to "Visual" might be helpful
+  --- when trying to select a range in charwise.
+  ---@field first_selected_label? string
+  ---  selected label. Default is "@text.danger"
+  ---@field label? string A highlight group for the labels. Default is
+  ---  "@text.warning"
 <
 
 

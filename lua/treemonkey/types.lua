@@ -9,9 +9,11 @@
 ---@field experimental { treesitter_context: boolean } Options for experimental features
 
 ---@class TreemonkeyOpts.highlight Highlight groups
----@field backdrop? string A highlight group to be applied to the largest range of the node of the choice during the selection.
----@field first_node? string A highlight group for the node of the first selection
----@field label? string A highlight group for the labels
+---@field backdrop? string On the node with the largest range among the choice
+---@field first_node? string DEPRECATED. Use first_selected_node instead.
+---@field first_selected_label? string On the first selected label
+---@field first_selected_node? string On the first selected node
+---@field label? string On labels
 
 ---@class TreemonkeyItem
 ---@field row integer

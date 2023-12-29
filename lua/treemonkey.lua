@@ -201,9 +201,12 @@ local function choose_node(nodes, opts)
 	end
 
 	-- highlight first choice
-	if opts.highlight.first_node then
-		mark_node(first_choice.node, opts.highlight.first_node)
+	if opts.highlight.first_selected_node then
+		mark_node(first_choice.node, opts.highlight.first_selected_node)
 	end
+	local opts_first_label = vim.tbl_extend("force", first_choice, { hi = opts.highlight.first_selected_label })
+	mark_label(0, opts_first_label)
+	mark_treesitter_context(context, opts_first_label)
 
 	-- add new backdrop
 	if opts.highlight.backdrop then
@@ -213,14 +216,14 @@ local function choose_node(nodes, opts)
 	-- prepare labels for the second choice
 	for _, v in pairs(ambiguity) do
 		local srow, scol, erow, ecol = range(v.node)
-		for _, o in pairs({
-			{ row = srow, col = scol, label = v.label:lower(), hi = opts.highlight.label },
-			{ row = erow, col = ecol, label = v.label:upper(), hi = opts.highlight.label },
-		}) do
-			mark_label(0, o)
-			mark_treesitter_context(context, o)
+		local o = { row = srow, col = scol, label = v.label:lower(), hi = opts.highlight.label }
+		if srow == first_choice.row and scol == first_choice.col then
+			o = { row = erow, col = ecol, label = v.label:upper(), hi = opts.highlight.label }
 		end
+		mark_label(0, o)
+		mark_treesitter_context(context, o)
 	end
+
 	vim.cmd.redraw()
 
 	local second_label = getcharstr()
@@ -240,10 +243,22 @@ end
 ---@return TreemonkeyOpts
 local function init_opts(opts)
 	local o = vim.tbl_deep_extend("keep", opts or {}, {
-		highlight = { label = "@text.warning" },
+		highlight = { label = "@text.warning", first_selected_label = "@text.danger" },
 		labels = labels_default,
 		experimental = {},
 	})
+
+	if o.highlight.first_node then
+		vim.deprecate(
+			"TreemonkeyOpts.highlight.first_node",
+			"TreemonkeyOpts.highlight.first_selected_node",
+			"0.1",
+			"treemonkey"
+		)
+		if not o.highlight.first_selected_node then
+			o.highlight.first_selected_node = o.highlight.first_node
+		end
+	end
 
 	if o.steps ~= nil and o.steps ~= 1 and o.steps ~= 2 then
 		error("TreemonkeyOpts.steps should be one of nil, 1 or 2")
