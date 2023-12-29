@@ -88,13 +88,17 @@ local function range(node)
 	return srow, scol, erow, ecol == 0 and 0 or (ecol - 1)
 end
 
+---@param ctx { buf: integer, ranges: Range4[] }?
 ---@param opts { row: integer, col: integer, label: string, hi?: string, buf: integer, ctx: Range4[] }
 ---@return integer[]
-local function mark_treesitter_context(opts)
+local function mark_treesitter_context(ctx, opts)
+	if not ctx then
+		return {}
+	end
 	local marks = {}
-	for i, v in ipairs(opts.ctx) do
+	for i, v in ipairs(ctx.ranges) do
 		if v[1] == opts.row then
-			table.insert(marks, mark_label(vim.tbl_extend("force", opts, { row = i - 1 })))
+			table.insert(marks, mark_label(ctx.buf, vim.tbl_extend("force", opts, { row = i - 1 })))
 		end
 	end
 	return marks
@@ -129,46 +133,42 @@ local function choose_node(nodes, opts)
 	end
 
 	--[[ first choice ]]
-	local psrow, pscol, perow, pecol ---@type integer?, integer?, integer?, integer?
-	local cnt = 1
+	local cnt, psrow, pscol, perow, pecol = 1, -1, -1, -1, -1
 	for idx, node in ipairs(nodes) do
-		-- stop labelling if no more labels are available
-		if not opts.labels[cnt] then
-			break
-		end
+		local label = opts.labels[cnt]
 
-		if not opts.include_root and #nodes == idx and node:equal(node:tree():root()) then
+		-- stop labelling if no more labels are available or if need to exclude root node
+		if not label or (not opts.include_root and #nodes == idx and node:equal(node:tree():root())) then
 			break
 		end
 
 		-- let node be a choice if the range differs from the range of the previously marked node
 		local srow, scol, erow, ecol = range(node)
 		if (psrow ~= srow or pscol ~= scol or perow ~= erow or pecol ~= ecol) and (srow ~= erow or scol ~= ecol) then
-			psrow, pscol, perow, pecol = srow, scol, erow, ecol
 			for _, v in pairs({
-				{ row = srow, col = scol, label = opts.labels[cnt], hi = opts.highlight.label },
-				{ row = erow, col = ecol, label = opts.labels[cnt]:upper(), hi = opts.highlight.label },
+				{ row = srow, col = scol, label = label, hi = opts.highlight.label },
+				{ row = erow, col = ecol, label = label:upper(), hi = opts.highlight.label },
 			}) do
 				local item = { row = v.row, col = v.col, node = node, label = v.label }
+
 				labelled[v.label] = item
+
 				if not positions[v.row] then
 					positions[v.row] = {}
 				end
+				if not positions[v.row][v.col] then
+					positions[v.row][v.col] = {}
+				end
+				table.insert(positions[v.row][v.col], item)
 
-				if positions[v.row][v.col] then
-					table.insert(positions[v.row][v.col], item)
-				else
-					positions[v.row][v.col] = { item }
-					local o = { row = v.row, col = v.col, label = v.label, hi = v.hi }
-					mark_label(o)
-					if context then
-						o.buf = context.buf
-						o.ctx = context.ranges
-						mark_treesitter_context(o)
-					end
+				if #positions[v.row][v.col] == 1 then
+					mark_label(0, v)
+					mark_treesitter_context(context, v)
 				end
 			end
-			cnt = cnt + 1
+
+			-- update state
+			cnt, psrow, pscol, perow, pecol = cnt + 1, srow, scol, erow, ecol
 		end
 	end
 
@@ -221,12 +221,8 @@ local function choose_node(nodes, opts)
 			{ row = srow, col = scol, label = v.label:lower(), hi = opts.highlight.label },
 			{ row = erow, col = ecol, label = v.label:upper(), hi = opts.highlight.label },
 		}) do
-			mark_label(o)
-			if context then
-				o.buf = context.buf
-				o.ctx = context.ranges
-				mark_treesitter_context(o)
-			end
+			mark_label(0, o)
+			mark_treesitter_context(context, o)
 		end
 	end
 	vim.cmd.redraw()
