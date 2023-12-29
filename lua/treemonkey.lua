@@ -56,7 +56,7 @@ local function gather_nodes(ignore_injections)
 
 	local node = vim.treesitter.get_node({ ignore_injections = true })
 
-	if not node or (#nodes > 0 and nodes[1]:id() == node:id()) then
+	if not node or (#nodes > 0 and node:equal(nodes[1])) then
 		return nodes
 	end
 
@@ -137,7 +137,7 @@ local function choose_node(nodes, opts)
 			break
 		end
 
-		if not opts.include_root and #nodes == idx and node.id == nodes[#nodes]:tree():root().id then
+		if not opts.include_root and #nodes == idx and node:equal(node:tree():root()) then
 			break
 		end
 
