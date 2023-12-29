@@ -15,7 +15,8 @@ MODULES AND FUNCTIONS     |treemonkey-modules-and-functions|
   treemonkey              |treemonkey|
   treemonkey.get()        |treemonkey.get()|
   treemonkey.select()     |treemonkey.select()|
-FUNCTION PARAMTERS        |treemonkey-function-parameters|
+TYPE DEFINITIONS          |treemonkey-type-definitions|
+  TreemonkeyItem          |TreemonkeyItem|
   TreemonkeyOpts          |TreemonkeyOpts|
 EXAMPLES                  |treemonkey-examples|
   Select a node           |treemonkey-example-select-node|
@@ -53,17 +54,18 @@ MODULES AND FUNCTIONS                       *treemonkey-modules-and-functions*
 
 *treemonkey.get()*
 
-Get a chosen node.
+Get a chosen node. See |TreemonkeyOpts| and |TreemonkeyItem| for type
+definitions of the parameter and the retrun.
 
 >lua
-  ---@param opts: TreemonkeyOpts
-  ---@return { row: integer, col: integer, label: string, node: TSNode }
+  ---@type fun(opts: TreemonkeyOpts): TreemonkeyItem
   require("treemonkey").get
 <
 
 *treemonkey.select()*
 
 Select a range of the chosen node in |Visual-mode| or |Operator-pending-mode|.
+See |TreemonkeyOpts| for the type definition of the parameter.
 
 >lua
   require("treemonkey").select  ---@type fun(opts: TreemonkeyOpts): nil
@@ -71,8 +73,21 @@ Select a range of the chosen node in |Visual-mode| or |Operator-pending-mode|.
 
 
 ==============================================================================
-FUNCTION PARAMETERS                           *treemonkey-function-parameters*
+TYPE DEFINITIONS                                 *treemonkey-type-definitions*
 
+
+------------------------------------------------------------------------------
+*TreemonkeyItem*
+
+Retrun value of the |treemonkey.get()|.
+
+>lua
+  ---@class TreemonkeyItem
+  ---@field row integer
+  ---@field col integer
+  ---@field label string
+  ---@field node TSNode
+<
 
 ------------------------------------------------------------------------------
 *TreemonkeyOpts*
