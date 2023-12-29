@@ -10,18 +10,23 @@ See https://github.com/atusy/treemonkey.nvim/ for animated examples.
 ==============================================================================
 CONTENTS                                                 *treemonkey-contents*
 
-SETUP                     |treemonkey-setup|
-MODULES AND FUNCTIONS     |treemonkey-modules-and-functions|
-  treemonkey              |treemonkey|
-  treemonkey.get()        |treemonkey.get()|
-  treemonkey.select()     |treemonkey.select()|
-TYPE DEFINITIONS          |treemonkey-type-definitions|
-  TreemonkeyItem          |TreemonkeyItem|
-  TreemonkeyOpts          |TreemonkeyOpts|
-EXAMPLES                  |treemonkey-examples|
-  Select a node           |treemonkey-example-select|
-  Jump to a node          |treemonkey-example-jump|
-  Fold a node             |treemonkey-example-fold|
+SETUP                                 |treemonkey-setup|
+MODULES AND FUNCTIONS                 |treemonkey-modules-and-functions|
+  treemonkey                          |treemonkey|
+  treemonkey.get()                    |treemonkey.get()|
+  treemonkey.select()                 |treemonkey.select()|
+  treemonkey.action                   |treemonkey.action|
+  treemonkey.action.update_selection  |treemonkey.action|
+  treemonkey.action.unite_selection   |treemonkey.action|
+  treemonkey.action.jump              |treemonkey.action|
+TYPE DEFINITIONS                      |treemonkey-type-definitions|
+  TreemonkeyAction                    |TreemonkeyAction|
+  TreemonkeyItem                      |TreemonkeyItem|
+  TreemonkeyOpts                      |TreemonkeyOpts|
+EXAMPLES                              |treemonkey-examples|
+  Select a node                       |treemonkey-example-select|
+  Jump to a node                      |treemonkey-example-jump|
+  Fold a node                         |treemonkey-example-fold|
 
 
 ==============================================================================
