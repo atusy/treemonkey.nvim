@@ -34,7 +34,6 @@ choice comes from a node on the cursor and its parent nodes.
   require("lazy").setup({
     {
       "https://github.com/atusy/treemonkey.nvim",
-      deps = { "https://github.com/nvim-treesitter/nvim-treesitter" }
       init = function()
         vim.keymap.set({ "x", "o" }, "m", function()
           require("treemonkey").select({ ignore_injections = false })

@@ -17,10 +17,6 @@ It's like monkey hanging around the Abstract Syntax Tree. Isn't it?
 
 ![Example](https://github.com/atusy/treemonkey.nvim/assets/30277794/42aceb5e-0efc-40a3-8d3c-0ab5e56e43ac)
 
-## Requirements
-
-- [nvim-treesitter/nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
-
 ## Example
 
 ```lua
