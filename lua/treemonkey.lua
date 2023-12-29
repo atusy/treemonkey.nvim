@@ -22,9 +22,10 @@ local function getcharstr()
 	end
 end
 
----@param opts { row: integer, col: integer, label: string, hi?: string, buf?: integer }
-local function mark_label(opts)
-	return vim.api.nvim_buf_set_extmark(opts.buf or 0, M.namespace, opts.row, opts.col, {
+---@param buf integer
+---@param opts { row: integer, col: integer, label: string, hi: string }
+local function mark_label(buf, opts)
+	return vim.api.nvim_buf_set_extmark(buf, M.namespace, opts.row, opts.col, {
 		virt_text = { { opts.label, opts.hi or "@text.warning" } },
 		virt_text_pos = "overlay",
 	})
