@@ -25,7 +25,10 @@ It's like monkey hanging around the Abstract Syntax Tree. Isn't it?
 
 ```lua
 vim.keymap.set({"x", "o"}, "m", function()
-  require("treemonkey").select({ ignore_injections = false })
+  require("treemonkey").select({
+    ignore_injections = false,
+    highlight = { first_choice = "Visual" }
+  })
 end)
 ```
 
