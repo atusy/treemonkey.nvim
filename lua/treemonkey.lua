@@ -202,6 +202,13 @@ local function choose_node(nodes, opts)
 	end
 
 	--[[ second choice ]]
+	-- clean up the extmarks from the first choice
+	for buf, marks in pairs(first_marks) do
+		for _, m in pairs(marks) do
+			vim.api.nvim_buf_del_extmark(buf, M.namespace, m)
+		end
+	end
+
 	-- highlight first choice
 	if opts.highlight.first_node then
 		mark_node(first_choice.node, opts.highlight.first_node)
@@ -228,13 +235,6 @@ local function choose_node(nodes, opts)
 		end
 	end
 	vim.cmd.redraw()
-
-	-- clean up the extmarks from the first choice
-	for buf, marks in pairs(first_marks) do
-		for _, m in pairs(marks) do
-			vim.api.nvim_buf_del_extmark(buf, M.namespace, m)
-		end
-	end
 
 	local second_label = getcharstr()
 	if not second_label then
