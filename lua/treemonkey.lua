@@ -131,13 +131,13 @@ local function choose_node(nodes, opts)
 	--[[ first choice ]]
 	local psrow, pscol, perow, pecol ---@type integer?, integer?, integer?, integer?
 	local cnt = 1
-	for _, node in ipairs(nodes) do
+	for idx, node in ipairs(nodes) do
 		-- stop labelling if no more labels are available
 		if not opts.labels[cnt] then
 			break
 		end
 
-		if not opts.include_root and #nodes == cnt and node.id == nodes[#nodes]:tree():root().id then
+		if not opts.include_root and #nodes == idx and node.id == nodes[#nodes]:tree():root().id then
 			break
 		end
 
