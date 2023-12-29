@@ -125,10 +125,9 @@ local function choose_node(nodes, opts)
 	local labelled = {} ---@type table<string, TreemonkeyItem>
 	local positions = {} ---@type table<integer, table<integer, TreemonkeyItem[]>>
 	local context = opts.experimental.treesitter_context and get_treesitter_context() or {}
-	local first_marks = { [0] = {} } ---@type table<integer, integer[]>
 
 	if opts.highlight.backdrop then
-		table.insert(first_marks[0], mark_node(nodes[#nodes], opts.highlight.backdrop))
+		mark_node(nodes[#nodes], opts.highlight.backdrop)
 	end
 
 	--[[ first choice ]]
@@ -163,11 +162,11 @@ local function choose_node(nodes, opts)
 				else
 					positions[v.row][v.col] = { item }
 					local o = { row = v.row, col = v.col, label = v.label, hi = v.hi }
-					table.insert(first_marks[0], mark_label(o))
+					mark_label(o)
 					if context.buf then
 						o.buf = context.buf
 						o.ctx = context.ranges
-						first_marks[o.buf] = mark_treesitter_context(o)
+						mark_treesitter_context(o)
 					end
 				end
 			end
