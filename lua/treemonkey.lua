@@ -30,7 +30,7 @@ end
 
 ---@param opts { row: integer, col: integer, label: string, hi?: string, buf?: integer }
 local function mark_label(opts)
-	vim.api.nvim_buf_set_extmark(opts.buf or 0, M.namespace, opts.row, opts.col, {
+	return vim.api.nvim_buf_set_extmark(opts.buf or 0, M.namespace, opts.row, opts.col, {
 		virt_text = { { opts.label, opts.hi or "@text.warning" } },
 		virt_text_pos = "overlay",
 	})
@@ -40,7 +40,7 @@ end
 ---@param hi? string
 local function mark_selection(node, hi)
 	local srow, scol, erow, ecol = node:range()
-	vim.api.nvim_buf_set_extmark(0, M.namespace, srow, scol, {
+	return vim.api.nvim_buf_set_extmark(0, M.namespace, srow, scol, {
 		end_row = erow,
 		end_col = ecol,
 		hl_group = hi or "Visual",
@@ -94,11 +94,13 @@ end
 
 ---@param opts { row: integer, col: integer, label: string, hi?: string, buf: integer, ctx: Range4[] }
 local function mark_treesitter_context(opts)
+	local marks = {}
 	for i, v in ipairs(opts.ctx) do
 		if v[1] == opts.row then
-			mark_label(vim.tbl_extend("force", opts, { row = i - 1 }))
+			table.insert(marks, mark_label(vim.tbl_extend("force", opts, { row = i - 1 })))
 		end
 	end
+	return marks
 end
 
 local function get_treesitter_context()
@@ -125,6 +127,7 @@ local function choose_node(nodes, opts)
 	local context = opts.experimental.treesitter_context and get_treesitter_context() or {}
 
 	--[[ first choice ]]
+	local first_marks = { [0] = {} } ---@type table<integer, integer[]>
 	local psrow, pscol, perow, pecol ---@type integer?, integer?, integer?, integer?
 	for cnt, node in ipairs(nodes) do
 		-- stop labelling if no more labels are available
@@ -155,11 +158,11 @@ local function choose_node(nodes, opts)
 				else
 					positions[v.row][v.col] = { item }
 					local o = { row = v.row, col = v.col, label = v.label, hi = v.hi }
-					mark_label(o)
+					table.insert(first_marks[0], mark_label(o))
 					if context.buf then
 						o.buf = context.buf
 						o.ctx = context.ranges
-						mark_treesitter_context(o)
+						first_marks[o.buf] = mark_treesitter_context(o)
 					end
 				end
 			end
@@ -193,10 +196,19 @@ local function choose_node(nodes, opts)
 	end
 
 	--[[ second choice ]]
-	clear({ 0, context.buf })
+	-- clean up
+	for buf, marks in pairs(first_marks) do
+		for _, m in pairs(marks) do
+			vim.api.nvim_buf_del_extmark(buf, M.namespace, m)
+		end
+	end
+
+	-- highlight first choice
 	if opts.highlight.first_node then
 		mark_selection(first_choice.node, opts.highlight.first_node)
 	end
+
+	-- ask for the second choice to solve the ambiguity
 	for _, v in pairs(ambiguity) do
 		local srow, scol, erow, ecol = range(v.node)
 		for _, o in pairs({
@@ -218,6 +230,7 @@ local function choose_node(nodes, opts)
 		return
 	end
 
+	-- determine the choice
 	for _, v in pairs(ambiguity) do
 		if v.label:lower() == second_label:lower() then
 			return labelled[second_label]
@@ -261,5 +274,9 @@ function M.select(opts)
 		vim.notify(result, vim.log.levels.ERROR)
 	end
 end
+
+vim.keymap.set({ "n", "x", "o" }, "  ", function()
+	M.select()
+end)
 
 return M
