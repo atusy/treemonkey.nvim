@@ -75,7 +75,7 @@ function M.unite_selection(item)
 		end
 		vim.api.nvim_win_set_cursor(0, { nsrow + 1, nscol })
 		return
-	elseif nerow > verow or (nerow == verow and necol > necol) then
+	elseif nerow > verow or (nerow == verow and necol > vecol) then
 		if on == "start" then
 			vim.cmd("normal! o")
 		end
