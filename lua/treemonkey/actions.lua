@@ -60,7 +60,7 @@ function M.unite_selection(item)
 	local vtop, vbot = o1, o2
 	if o1[1] > o2[1] or ((o1[1] == o2[1]) and (o1[2] < o2[2])) then
 		on = "end"
-		vtop, vbot = o1, o2
+		vtop, vbot = o2, o1
 	end
 
 	local vsrow, vscol, verow, vecol = vtop[1] - 1, vtop[2], vbot[1] - 1, vbot[2]
