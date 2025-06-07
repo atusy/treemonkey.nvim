@@ -114,10 +114,7 @@ local function get_treesitter_context()
 		if vim.w[w].treesitter_context then
 			return {
 				buf = vim.api.nvim_win_get_buf(w),
-				ranges = require("treesitter-context.context").get(
-					vim.api.nvim_get_current_buf(),
-					vim.api.nvim_get_current_win()
-				),
+				ranges = require("treesitter-context.context").get(vim.api.nvim_get_current_win()),
 			}
 		end
 	end
