@@ -1,6 +1,6 @@
 ---@class TreemonkeyOpts
 ---@field action? TreemonkeyAction?
----@field filter? fun(nodes: TSNode[]): TSNode[] A function to fileter candidate nodes
+---@field filter? TreemonkeyFilter? A function to fileter candidate nodes
 ---@field highlight TreemonkeyOpts.highlight
 ---@field ignore_injections? boolean Whether or not (default) to ignore injected language
 ---@field include_root? boolean Whether or not (default) to include the root node in a choice
@@ -22,3 +22,4 @@
 ---@field node TSNode
 
 ---@alias TreemonkeyAction fun(item: TreemonkeyItem): any
+---@alias TreemonkeyFilter fun(nodes: TSNode[]): TSNode[]
