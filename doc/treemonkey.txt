@@ -10,23 +10,25 @@ See https://github.com/atusy/treemonkey.nvim/ for animated examples.
 ==============================================================================
 CONTENTS                                                 *treemonkey-contents*
 
-SETUP                                 |treemonkey-setup|
-MODULES AND FUNCTIONS                 |treemonkey-modules-and-functions|
-  treemonkey                          |treemonkey|
-  treemonkey.get()                    |treemonkey.get()|
-  treemonkey.select()                 |treemonkey.select()|
-  treemonkey.actions                  |treemonkey.actions|
-  treemonkey.actions.update_selection |treemonkey.actions|
-  treemonkey.actions.unite_selection  |treemonkey.actions|
-  treemonkey.actions.jump             |treemonkey.actions|
-TYPE DEFINITIONS                      |treemonkey-type-definitions|
-  TreemonkeyAction                    |TreemonkeyAction|
-  TreemonkeyItem                      |TreemonkeyItem|
-  TreemonkeyOpts                      |TreemonkeyOpts|
-EXAMPLES                              |treemonkey-examples|
-  Select a node                       |treemonkey-example-select|
-  Jump to a node                      |treemonkey-example-jump|
-  Fold a node                         |treemonkey-example-fold|
+SETUP                                   |treemonkey-setup|
+MODULES AND FUNCTIONS                   |treemonkey-modules-and-functions|
+  treemonkey                            |treemonkey|
+  treemonkey.get                        |treemonkey.get|
+  treemonkey.select                     |treemonkey.select|
+  treemonkey.actions                    |treemonkey.actions|
+  treemonkey.actions.update_selection   |treemonkey.actions.update_selection|
+  treemonkey.actions.unite_selection    |treemonkey.actions.unite_selection|
+  treemonkey.actions.jump               |treemonkey.actions.jump|
+  treemonkey.filters                    |treemonkey.filters|
+  treemonkey.filters.linewise           |treemonkey.filters.linewise|
+TYPE DEFINITIONS                        |treemonkey-type-definitions|
+  TreemonkeyAction                      |TreemonkeyAction|
+  TreemonkeyItem                        |TreemonkeyItem|
+  TreemonkeyOpts                        |TreemonkeyOpts|
+EXAMPLES                                |treemonkey-examples|
+  Select a node                         |treemonkey-example-select|
+  Jump to a node                        |treemonkey-example-jump|
+  Fold a node                           |treemonkey-example-fold|
 
 
 ==============================================================================
@@ -57,7 +59,7 @@ MODULES AND FUNCTIONS                       *treemonkey-modules-and-functions*
 ------------------------------------------------------------------------------
 *treemonkey*
 
-*treemonkey.get()*
+*treemonkey.get*
 
 Get a chosen node. See |TreemonkeyOpts| and |TreemonkeyItem| for type
 definitions of the parameter and the retrun.
@@ -67,7 +69,7 @@ definitions of the parameter and the retrun.
   require("treemonkey").get
 <
 
-*treemonkey.select()*
+*treemonkey.select*
 
 Select a range of the chosen node in |Visual-mode| or |Operator-pending-mode|.
 See |TreemonkeyOpts| for the type definition of the parameter.
@@ -102,7 +104,7 @@ Unit the range of selection with the current range of selection.
   require("treemonkey.actions").unite_selection
 <
 
-*treemonkey.actions.jumo*
+*treemonkey.actions.jump*
 
 Jump to the edge of a selected range.
 
