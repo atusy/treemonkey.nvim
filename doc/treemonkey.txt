@@ -15,10 +15,10 @@ MODULES AND FUNCTIONS                 |treemonkey-modules-and-functions|
   treemonkey                          |treemonkey|
   treemonkey.get()                    |treemonkey.get()|
   treemonkey.select()                 |treemonkey.select()|
-  treemonkey.action                   |treemonkey.action|
-  treemonkey.action.update_selection  |treemonkey.action|
-  treemonkey.action.unite_selection   |treemonkey.action|
-  treemonkey.action.jump              |treemonkey.action|
+  treemonkey.actions                  |treemonkey.actions|
+  treemonkey.actions.update_selection |treemonkey.actions|
+  treemonkey.actions.unite_selection  |treemonkey.actions|
+  treemonkey.actions.jump             |treemonkey.actions|
 TYPE DEFINITIONS                      |treemonkey-type-definitions|
   TreemonkeyAction                    |TreemonkeyAction|
   TreemonkeyItem                      |TreemonkeyItem|
@@ -78,37 +78,37 @@ See |TreemonkeyOpts| for the type definition of the parameter.
 
 
 ------------------------------------------------------------------------------
-*treemonkey.action*
+*treemonkey.actions*
 
 Provides |TreemonkeyAction| functions to be specified to
 |TreemonkeyOpts|.action parameter for the |treemonkey.select()|.
 
-*treemonkey.action.update_selection*
+*treemonkey.actions.update_selection*
 
 Updates the range of selection to the selected node. This is the default
 action.
 
 >lua
   ---@type fun(item: TreemonkeyItem): nil
-  require("treemonkey.action").update_selection
+  require("treemonkey.actions").update_selection
 <
 
-*treemonkey.action.unite_selection*
+*treemonkey.actions.unite_selection*
 
 Unit the range of selection with the current range of selection.
 
 >lua
   ---@type fun(item: TreemonkeyItem): nil
-  require("treemonkey.action").unite_selection
+  require("treemonkey.actions").unite_selection
 <
 
-*treemonkey.action.jumo*
+*treemonkey.actions.jumo*
 
 Jump to the edge of a selected range.
 
 >lua
   ---@type fun(item: TreemonkeyItem): nil
-  require("treemonkey.action").jump
+  require("treemonkey.actions").jump
 <
 
 ==============================================================================
@@ -144,7 +144,7 @@ Options to be passed to |treemonkey.get()| or |treemonkey.select()|.
   ---@class TreemonkeyOpts
   ---  A table of options 
   ---@field filter? fun(nodes: TSNode[]): TSNode[]
-  ---  A function to fileter candidate nodes
+  ---  A function to filter candidate nodes
   ---@field highlight TreemonkeyOpts.highlight
   ---@field ignore_injections? boolean
   ---  Whether or not (default) to ignore injected language
@@ -199,7 +199,7 @@ ambiguity of the selected node does not matter.
 
 >lua
   require("treemonkey").select({
-    action = require("treemonkey.action").jump,
+    action = require("treemonkey.actions").jump,
     steps = 1,
   })
 <
