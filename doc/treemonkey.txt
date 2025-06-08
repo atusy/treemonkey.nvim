@@ -111,6 +111,21 @@ Jump to the edge of a selected range.
   require("treemonkey.actions").jump
 <
 
+------------------------------------------------------------------------------
+*treemonkey.filters*
+
+Provides |TreemonkeyFilter| functions to be specified to
+|TreemonkeyOpts|.filter parameter for the |treemonkey.select()|.
+
+*treemonkey.filters.linewise*
+
+Undupe nodes that has the same range in a linewise manner.
+
+>lua
+  ---@type fun(nodes: TSNode[]): TSNode[]
+  require("treemonkey.filters").linewise
+<
+
 ==============================================================================
 TYPE DEFINITIONS                                 *treemonkey-type-definitions*
 
