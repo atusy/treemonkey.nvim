@@ -40,3 +40,22 @@ With [lazy.nvim](https://github.com/folke/lazy.nvim/), ...
   end
 }
 ```
+
+## Backends
+
+The candidate nodes can be gathered from two interchangeable backends that
+share the same label-based selection engine:
+
+- `treemonkey.treesitter` gathers nodes from `vim.treesitter` (the default).
+  `treemonkey.get` and `treemonkey.select` are aliases of
+  `treemonkey.treesitter.get` and `treemonkey.treesitter.select`.
+- `treemonkey.lsp.selection_range` gathers ranges from a language server via
+  the `textDocument/selectionRange` request. It requires a language server
+  with `selectionRangeProvider` attached to the buffer.
+
+```lua
+-- select based on the language server instead of treesitter
+vim.keymap.set({ "x", "o" }, "m", function()
+  require("treemonkey.lsp.selection_range").select()
+end)
+```

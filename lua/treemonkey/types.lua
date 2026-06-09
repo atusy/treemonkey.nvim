@@ -15,11 +15,16 @@
 ---@field first_selected_node? string On the first selected node
 ---@field label? string On labels
 
+---@class TreemonkeyNode A candidate understood by the selection engine.
+--- TSNode satisfies this interface, so treesitter nodes can be used directly.
+--- The LSP backend wraps each selection range into a value of this shape.
+---@field range fun(self: TreemonkeyNode): integer, integer, integer, integer 0-indexed, end-exclusive (srow, scol, erow, ecol)
+
 ---@class TreemonkeyItem
 ---@field row integer
 ---@field col integer
 ---@field label string
----@field node TSNode
+---@field node TSNode | TreemonkeyNode
 
 ---@alias TreemonkeyAction fun(item: TreemonkeyItem): any
----@alias TreemonkeyFilter fun(nodes: TSNode[]): TSNode[]
+---@alias TreemonkeyFilter fun(nodes: TreemonkeyNode[]): TreemonkeyNode[]

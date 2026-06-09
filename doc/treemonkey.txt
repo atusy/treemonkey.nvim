@@ -15,6 +15,12 @@ MODULES AND FUNCTIONS                   |treemonkey-modules-and-functions|
   treemonkey                            |treemonkey|
   treemonkey.get                        |treemonkey.get|
   treemonkey.select                     |treemonkey.select|
+  treemonkey.treesitter                 |treemonkey.treesitter|
+  treemonkey.treesitter.get             |treemonkey.treesitter.get|
+  treemonkey.treesitter.select          |treemonkey.treesitter.select|
+  treemonkey.lsp.selection_range        |treemonkey.lsp.selection_range|
+  treemonkey.lsp.selection_range.get    |treemonkey.lsp.selection_range.get|
+  treemonkey.lsp.selection_range.select |treemonkey.lsp.selection_range.select|
   treemonkey.actions                    |treemonkey.actions|
   treemonkey.actions.update_selection   |treemonkey.actions.update_selection|
   treemonkey.actions.unite_selection    |treemonkey.actions.unite_selection|
@@ -24,6 +30,7 @@ MODULES AND FUNCTIONS                   |treemonkey-modules-and-functions|
 TYPE DEFINITIONS                        |treemonkey-type-definitions|
   TreemonkeyAction                      |TreemonkeyAction|
   TreemonkeyItem                        |TreemonkeyItem|
+  TreemonkeyNode                        |TreemonkeyNode|
   TreemonkeyOpts                        |TreemonkeyOpts|
 EXAMPLES                                |treemonkey-examples|
   Select a node                         |treemonkey-example-select|
@@ -59,23 +66,81 @@ MODULES AND FUNCTIONS                       *treemonkey-modules-and-functions*
 ------------------------------------------------------------------------------
 *treemonkey*
 
+The plugin provides two interchangeable backends that gather the candidate
+nodes differently but share the same label-based selection engine:
+
+- |treemonkey.treesitter| gathers nodes from |vim.treesitter|.
+- |treemonkey.lsp.selection_range| gathers ranges from a language server via
+  the `textDocument/selectionRange` request.
+
 *treemonkey.get*
+*treemonkey.select*
+
+Aliases of |treemonkey.treesitter.get| and |treemonkey.treesitter.select|,
+kept for backward compatibility.
+
+>lua
+  ---@type fun(opts: TreemonkeyOpts): TreemonkeyItem
+  require("treemonkey").get
+
+  ---@type fun(opts: TreemonkeyOpts): nil
+  require("treemonkey").select
+<
+
+
+------------------------------------------------------------------------------
+*treemonkey.treesitter*
+
+Node selection backend based on |vim.treesitter|. The choice comes from the
+node on the cursor and its parent nodes.
+
+*treemonkey.treesitter.get*
 
 Get a chosen node. See |TreemonkeyOpts| and |TreemonkeyItem| for type
 definitions of the parameter and the retrun.
 
 >lua
   ---@type fun(opts: TreemonkeyOpts): TreemonkeyItem
-  require("treemonkey").get
+  require("treemonkey.treesitter").get
 <
 
-*treemonkey.select*
+*treemonkey.treesitter.select*
 
 Select a range of the chosen node in |Visual-mode| or |Operator-pending-mode|.
 See |TreemonkeyOpts| for the type definition of the parameter.
 
 >lua
-  require("treemonkey").select  ---@type fun(opts: TreemonkeyOpts): nil
+  ---@type fun(opts: TreemonkeyOpts): nil
+  require("treemonkey.treesitter").select
+<
+
+
+------------------------------------------------------------------------------
+*treemonkey.lsp.selection_range*
+
+Node selection backend based on the LSP `textDocument/selectionRange` request.
+The choice comes from the selection range on the cursor and its parent ranges
+as reported by the active language server. Requires a language server that
+supports `selectionRangeProvider` to be attached to the buffer.
+
+*treemonkey.lsp.selection_range.get*
+
+Get a chosen node. See |TreemonkeyOpts| and |TreemonkeyItem| for type
+definitions of the parameter and the retrun.
+
+>lua
+  ---@type fun(opts: TreemonkeyOpts): TreemonkeyItem
+  require("treemonkey.lsp.selection_range").get
+<
+
+*treemonkey.lsp.selection_range.select*
+
+Select a range of the chosen node in |Visual-mode| or |Operator-pending-mode|.
+See |TreemonkeyOpts| for the type definition of the parameter.
+
+>lua
+  ---@type fun(opts: TreemonkeyOpts): nil
+  require("treemonkey.lsp.selection_range").select
 <
 
 
@@ -149,7 +214,22 @@ Retrun value of the |treemonkey.get()|.
   ---@field row integer
   ---@field col integer
   ---@field label string
-  ---@field node TSNode
+  ---@field node TSNode | TreemonkeyNode
+<
+
+------------------------------------------------------------------------------
+*TreemonkeyNode*
+
+A candidate understood by the selection engine. |TSNode| satisfies this
+interface, so treesitter nodes are used as-is by |treemonkey.treesitter|. The
+|treemonkey.lsp.selection_range| backend wraps each LSP selection range into a
+value of this shape.
+
+>lua
+  ---@class TreemonkeyNode
+  ---  0-indexed, end-exclusive range (srow, scol, erow, ecol),
+  ---  compatible with TSNode:range()
+  ---@field range fun(self: TreemonkeyNode): integer, integer, integer, integer
 <
 
 ------------------------------------------------------------------------------
