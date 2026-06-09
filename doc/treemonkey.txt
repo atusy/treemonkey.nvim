@@ -21,6 +21,9 @@ MODULES AND FUNCTIONS                   |treemonkey-modules-and-functions|
   treemonkey.lsp.selection_range        |treemonkey.lsp.selection_range|
   treemonkey.lsp.selection_range.get    |treemonkey.lsp.selection_range.get|
   treemonkey.lsp.selection_range.select |treemonkey.lsp.selection_range.select|
+  treemonkey.lsp.folding_range          |treemonkey.lsp.folding_range|
+  treemonkey.lsp.folding_range.get      |treemonkey.lsp.folding_range.get|
+  treemonkey.lsp.folding_range.select   |treemonkey.lsp.folding_range.select|
   treemonkey.actions                    |treemonkey.actions|
   treemonkey.actions.update_selection   |treemonkey.actions.update_selection|
   treemonkey.actions.unite_selection    |treemonkey.actions.unite_selection|
@@ -72,6 +75,8 @@ nodes differently but share the same label-based selection engine:
 - |treemonkey.treesitter| gathers nodes from |vim.treesitter|.
 - |treemonkey.lsp.selection_range| gathers ranges from a language server via
   the `textDocument/selectionRange` request.
+- |treemonkey.lsp.folding_range| gathers folds from a language server via the
+  `textDocument/foldingRange` request.
 
 *treemonkey.get*
 *treemonkey.select*
@@ -141,6 +146,40 @@ See |TreemonkeyOpts| for the type definition of the parameter.
 >lua
   ---@type fun(opts: TreemonkeyOpts): nil
   require("treemonkey.lsp.selection_range").select
+<
+
+
+------------------------------------------------------------------------------
+*treemonkey.lsp.folding_range*
+
+Node selection backend based on the LSP `textDocument/foldingRange` request.
+Unlike `textDocument/selectionRange`, this request returns every fold in the
+document. The candidates are restricted to the folds that contain the cursor
+line and are ordered from the innermost to the outermost, so the choice
+behaves like a nesting chain around the cursor. Requires a language server
+that supports `foldingRangeProvider` to be attached to the buffer.
+
+Folds are line-oriented, so when a fold omits its `startCharacter` /
+`endCharacter`, the range covers whole lines.
+
+*treemonkey.lsp.folding_range.get*
+
+Get a chosen node. See |TreemonkeyOpts| and |TreemonkeyItem| for type
+definitions of the parameter and the retrun.
+
+>lua
+  ---@type fun(opts: TreemonkeyOpts): TreemonkeyItem
+  require("treemonkey.lsp.folding_range").get
+<
+
+*treemonkey.lsp.folding_range.select*
+
+Select a range of the chosen node in |Visual-mode| or |Operator-pending-mode|.
+See |TreemonkeyOpts| for the type definition of the parameter.
+
+>lua
+  ---@type fun(opts: TreemonkeyOpts): nil
+  require("treemonkey.lsp.folding_range").select
 <
 
 

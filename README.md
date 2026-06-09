@@ -52,10 +52,19 @@ share the same label-based selection engine:
 - `treemonkey.lsp.selection_range` gathers ranges from a language server via
   the `textDocument/selectionRange` request. It requires a language server
   with `selectionRangeProvider` attached to the buffer.
+- `treemonkey.lsp.folding_range` gathers folds from a language server via the
+  `textDocument/foldingRange` request, restricted to the folds that contain
+  the cursor and ordered innermost to outermost. It requires a language server
+  with `foldingRangeProvider` attached to the buffer.
 
 ```lua
 -- select based on the language server instead of treesitter
 vim.keymap.set({ "x", "o" }, "m", function()
   require("treemonkey.lsp.selection_range").select()
+end)
+
+-- or select an enclosing fold reported by the language server
+vim.keymap.set({ "x", "o" }, "m", function()
+  require("treemonkey.lsp.folding_range").select()
 end)
 ```

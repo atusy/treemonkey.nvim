@@ -18,6 +18,9 @@ treemonkey.actions.update_selection	treemonkey.txt	/*treemonkey.actions.update_s
 treemonkey.filters	treemonkey.txt	/*treemonkey.filters*
 treemonkey.filters.linewise	treemonkey.txt	/*treemonkey.filters.linewise*
 treemonkey.get	treemonkey.txt	/*treemonkey.get*
+treemonkey.lsp.folding_range	treemonkey.txt	/*treemonkey.lsp.folding_range*
+treemonkey.lsp.folding_range.get	treemonkey.txt	/*treemonkey.lsp.folding_range.get*
+treemonkey.lsp.folding_range.select	treemonkey.txt	/*treemonkey.lsp.folding_range.select*
 treemonkey.lsp.selection_range	treemonkey.txt	/*treemonkey.lsp.selection_range*
 treemonkey.lsp.selection_range.get	treemonkey.txt	/*treemonkey.lsp.selection_range.get*
 treemonkey.lsp.selection_range.select	treemonkey.txt	/*treemonkey.lsp.selection_range.select*
