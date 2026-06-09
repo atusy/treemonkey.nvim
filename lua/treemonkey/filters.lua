@@ -2,7 +2,7 @@ local M = {} ---@type table<string, TreemonkeyFilter>
 
 function M.linewise(nodes)
 	local idx = {} ---@type table<number, table<number, {scol: number, idx: number}>>
-	local res = {} ---@type TSNode[]
+	local res = {} ---@type TreemonkeyNode[]
 	for _, n in pairs(nodes) do
 		local srow, scol, erow, ecol = n:range()
 		if erow > (srow + (ecol == 0 and 1 or 0)) then

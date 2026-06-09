@@ -24,13 +24,13 @@ function M.to_byte(row, character, encoding)
 	return math.min(character, #line)
 end
 
---- Build a |TreemonkeyNode| from a 0-indexed, end-exclusive byte range.
+--- Build a |TreemonkeyLspNode| from a 0-indexed, end-exclusive byte range.
 ---@param srow integer
 ---@param scol integer
 ---@param erow integer
 ---@param ecol integer
 ---@param is_root boolean
----@return TreemonkeyNode
+---@return TreemonkeyLspNode
 function M.make_node(srow, scol, erow, ecol, is_root)
 	return {
 		is_root = is_root,

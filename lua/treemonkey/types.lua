@@ -17,8 +17,11 @@
 
 ---@class TreemonkeyNode A candidate understood by the selection engine.
 --- TSNode satisfies this interface, so treesitter nodes can be used directly.
---- The LSP backend wraps each selection range into a value of this shape.
+--- The LSP backends wrap each range into a TreemonkeyLspNode.
 ---@field range fun(self: TreemonkeyNode): integer, integer, integer, integer 0-indexed, end-exclusive (srow, scol, erow, ecol)
+
+---@class TreemonkeyLspNode : TreemonkeyNode A candidate produced by the LSP backends.
+---@field is_root boolean Whether this is the outermost (root) candidate
 
 ---@class TreemonkeyItem
 ---@field row integer

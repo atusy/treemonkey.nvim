@@ -12,7 +12,7 @@ M.namespace = core.namespace
 --- end column falls back to the byte length of the end line.
 ---@param fr table LSP FoldingRange ({ startLine, startCharacter?, endLine, endCharacter? })
 ---@param encoding "utf-8"|"utf-16"|"utf-32"
----@return TreemonkeyNode
+---@return TreemonkeyLspNode
 local function make_node(fr, encoding)
 	local srow = fr.startLine
 	local scol = fr.startCharacter and util.to_byte(srow, fr.startCharacter, encoding) or 0
@@ -31,7 +31,7 @@ local function make_node(fr, encoding)
 	return util.make_node(srow, scol, erow, ecol, false)
 end
 
----@return TreemonkeyNode[]
+---@return TreemonkeyLspNode[]
 local function gather_nodes()
 	local clients = vim.lsp.get_clients({ bufnr = 0, method = "textDocument/foldingRange" })
 	if #clients == 0 then
@@ -69,14 +69,14 @@ local function gather_nodes()
 		return a.startLine > b.startLine
 	end)
 
-	local nodes = {} ---@type TreemonkeyNode[]
+	local nodes = {} ---@type TreemonkeyLspNode[]
 	for _, fr in ipairs(containing) do
 		table.insert(nodes, make_node(fr, client.offset_encoding))
 	end
 	return nodes
 end
 
----@param node TreemonkeyNode
+---@param node TreemonkeyLspNode
 ---@return boolean
 local function is_root(node)
 	return node.is_root == true

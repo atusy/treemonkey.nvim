@@ -5,11 +5,11 @@ local M = {}
 
 M.namespace = core.namespace
 
---- Wrap an LSP `Range` into a |TreemonkeyNode|.
+--- Wrap an LSP `Range` into a |TreemonkeyLspNode|.
 ---@param range table LSP Range ({ start = Position, ["end"] = Position })
 ---@param encoding "utf-8"|"utf-16"|"utf-32"
 ---@param is_root boolean
----@return TreemonkeyNode
+---@return TreemonkeyLspNode
 local function make_node(range, encoding, is_root)
 	local srow = range.start.line
 	local scol = util.to_byte(srow, range.start.character, encoding)
@@ -22,9 +22,9 @@ end
 --- the innermost to the outermost (matching the treesitter parent chain order).
 ---@param selection_range table LSP SelectionRange ({ range = Range, parent? = SelectionRange })
 ---@param encoding "utf-8"|"utf-16"|"utf-32"
----@return TreemonkeyNode[]
+---@return TreemonkeyLspNode[]
 local function flatten(selection_range, encoding)
-	local nodes = {} ---@type TreemonkeyNode[]
+	local nodes = {} ---@type TreemonkeyLspNode[]
 	local sr = selection_range
 	while sr do
 		table.insert(nodes, make_node(sr.range, encoding, sr.parent == nil))
@@ -33,7 +33,7 @@ local function flatten(selection_range, encoding)
 	return nodes
 end
 
----@return TreemonkeyNode[]
+---@return TreemonkeyLspNode[]
 local function gather_nodes()
 	local clients = vim.lsp.get_clients({ bufnr = 0, method = "textDocument/selectionRange" })
 	if #clients == 0 then
@@ -56,7 +56,7 @@ local function gather_nodes()
 	return flatten(response.result[1], client.offset_encoding)
 end
 
----@param node TreemonkeyNode
+---@param node TreemonkeyLspNode
 ---@return boolean
 local function is_root(node)
 	return node.is_root == true
