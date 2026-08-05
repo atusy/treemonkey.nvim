@@ -5,41 +5,38 @@ local M = {}
 
 M.namespace = core.namespace
 
---- Wrap an LSP `Range` into a |TreemonkeyLspNode|.
+--- Wrap an LSP `Range` into a |TreemonkeyNode|.
 ---@param range table LSP Range ({ start = Position, ["end"] = Position })
 ---@param encoding "utf-8"|"utf-16"|"utf-32"
----@param is_root boolean
----@return TreemonkeyLspNode
-local function make_node(range, encoding, is_root)
+---@return TreemonkeyNode
+local function make_node(range, encoding)
 	local srow = range.start.line
 	local scol = util.to_byte(srow, range.start.character, encoding)
 	local erow = range["end"].line
 	local ecol = util.to_byte(erow, range["end"].character, encoding)
-	return util.make_node(srow, scol, erow, ecol, is_root)
+	return util.make_node(srow, scol, erow, ecol)
 end
 
 --- Flatten an LSP SelectionRange linked list into candidate nodes ordered from
 --- the innermost to the outermost (matching the treesitter parent chain order).
 ---
---- The outermost element is not treated as the excludable root (is_root =
---- false). A server is free to collapse ranges it considers equivalent, so the
---- end of the chain is whatever the server chose to report rather than the
---- document node. Dropping it therefore risks discarding the only candidate
---- covering the enclosing construct.
+--- The outermost element is not the document node: a server is free to collapse
+--- ranges it considers equivalent, so the end of the chain is whatever the
+--- server chose to report. See `treemonkey.lsp.util.is_root`.
 ---@param selection_range table LSP SelectionRange ({ range = Range, parent? = SelectionRange })
 ---@param encoding "utf-8"|"utf-16"|"utf-32"
----@return TreemonkeyLspNode[]
+---@return TreemonkeyNode[]
 local function flatten(selection_range, encoding)
-	local nodes = {} ---@type TreemonkeyLspNode[]
+	local nodes = {} ---@type TreemonkeyNode[]
 	local sr = selection_range
 	while sr do
-		table.insert(nodes, make_node(sr.range, encoding, false))
+		table.insert(nodes, make_node(sr.range, encoding))
 		sr = sr.parent
 	end
 	return nodes
 end
 
----@return TreemonkeyLspNode[]
+---@return TreemonkeyNode[]
 local function gather_nodes()
 	local clients = vim.lsp.get_clients({ bufnr = 0, method = "textDocument/selectionRange" })
 	if #clients == 0 then
@@ -62,18 +59,12 @@ local function gather_nodes()
 	return flatten(response.result[1], client.offset_encoding)
 end
 
----@param node TreemonkeyLspNode
----@return boolean
-local function is_root(node)
-	return node.is_root == true
-end
-
 ---@param opts TreemonkeyOpts?
 ---@return TreemonkeyItem?
 function M.get(opts)
 	return core.get(function()
 		return gather_nodes()
-	end, is_root, opts)
+	end, util.is_root, opts)
 end
 
 ---@param opts TreemonkeyOpts?

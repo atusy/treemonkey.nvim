@@ -12,7 +12,7 @@ M.namespace = core.namespace
 --- end column falls back to the byte length of the end line.
 ---@param fr table LSP FoldingRange ({ startLine, startCharacter?, endLine, endCharacter? })
 ---@param encoding "utf-8"|"utf-16"|"utf-32"
----@return TreemonkeyLspNode
+---@return TreemonkeyNode
 local function make_node(fr, encoding)
 	local srow = fr.startLine
 	local scol = fr.startCharacter and util.to_byte(srow, fr.startCharacter, encoding) or 0
@@ -25,13 +25,10 @@ local function make_node(fr, encoding)
 		ecol = #(vim.api.nvim_buf_get_lines(0, erow, erow + 1, false)[1] or "")
 	end
 
-	-- Every fold is a meaningful choice, so none is treated as the excludable
-	-- root (is_root = false). Otherwise a lone fold around the cursor would be
-	-- dropped by the default `include_root = false`.
-	return util.make_node(srow, scol, erow, ecol, false)
+	return util.make_node(srow, scol, erow, ecol)
 end
 
----@return TreemonkeyLspNode[]
+---@return TreemonkeyNode[]
 local function gather_nodes()
 	local clients = vim.lsp.get_clients({ bufnr = 0, method = "textDocument/foldingRange" })
 	if #clients == 0 then
@@ -69,17 +66,11 @@ local function gather_nodes()
 		return a.startLine > b.startLine
 	end)
 
-	local nodes = {} ---@type TreemonkeyLspNode[]
+	local nodes = {} ---@type TreemonkeyNode[]
 	for _, fr in ipairs(containing) do
 		table.insert(nodes, make_node(fr, client.offset_encoding))
 	end
 	return nodes
-end
-
----@param node TreemonkeyLspNode
----@return boolean
-local function is_root(node)
-	return node.is_root == true
 end
 
 ---@param opts TreemonkeyOpts?
@@ -87,7 +78,7 @@ end
 function M.get(opts)
 	return core.get(function()
 		return gather_nodes()
-	end, is_root, opts)
+	end, util.is_root, opts)
 end
 
 ---@param opts TreemonkeyOpts?

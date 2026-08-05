@@ -268,17 +268,13 @@ Retrun value of the |treemonkey.get()|.
 
 A candidate understood by the selection engine. |TSNode| satisfies this
 interface, so treesitter nodes are used as-is by |treemonkey.treesitter|. The
-LSP backends wrap each range into a TreemonkeyLspNode, which additionally
-carries an `is_root` flag.
+LSP backends wrap each reported range into one.
 
 >lua
   ---@class TreemonkeyNode
   ---  0-indexed, end-exclusive range (srow, scol, erow, ecol),
   ---  compatible with TSNode:range()
   ---@field range fun(self: TreemonkeyNode): integer, integer, integer, integer
-
-  ---@class TreemonkeyLspNode : TreemonkeyNode
-  ---@field is_root boolean Whether this is the outermost (root) candidate
 <
 
 ------------------------------------------------------------------------------

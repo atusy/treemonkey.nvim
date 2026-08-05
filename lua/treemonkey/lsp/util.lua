@@ -47,23 +47,33 @@ local function clamp(row, col)
 	return row, math.max(0, math.min(col, len))
 end
 
---- Build a |TreemonkeyLspNode| from a 0-indexed, end-exclusive byte range.
+--- Build a |TreemonkeyNode| from a 0-indexed, end-exclusive byte range.
 ---@param srow integer
 ---@param scol integer
 ---@param erow integer
 ---@param ecol integer
----@param is_root boolean
----@return TreemonkeyLspNode
-function M.make_node(srow, scol, erow, ecol, is_root)
+---@return TreemonkeyNode
+function M.make_node(srow, scol, erow, ecol)
 	srow, scol = clamp(srow, scol)
 	erow, ecol = clamp(erow, ecol)
 	return {
-		is_root = is_root,
 		---@return integer, integer, integer, integer
 		range = function()
 			return srow, scol, erow, ecol
 		end,
 	}
+end
+
+--- The `is_root` predicate of the LSP backends.
+---
+--- Every range a server reports is a meaningful choice, so none of them is the
+--- excludable root and |TreemonkeyOpts|.include_root has no effect. A server
+--- decides on its own which ranges to report: it may collapse ranges it
+--- considers equivalent, and it may answer with a single fold around the
+--- cursor. Excluding an outermost candidate would silently drop it.
+---@return boolean
+function M.is_root()
+	return false
 end
 
 return M
