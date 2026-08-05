@@ -20,6 +20,12 @@ end
 
 --- Flatten an LSP SelectionRange linked list into candidate nodes ordered from
 --- the innermost to the outermost (matching the treesitter parent chain order).
+---
+--- The outermost element is not treated as the excludable root (is_root =
+--- false). A server is free to collapse ranges it considers equivalent, so the
+--- end of the chain is whatever the server chose to report rather than the
+--- document node. Dropping it therefore risks discarding the only candidate
+--- covering the enclosing construct.
 ---@param selection_range table LSP SelectionRange ({ range = Range, parent? = SelectionRange })
 ---@param encoding "utf-8"|"utf-16"|"utf-32"
 ---@return TreemonkeyLspNode[]
@@ -27,7 +33,7 @@ local function flatten(selection_range, encoding)
 	local nodes = {} ---@type TreemonkeyLspNode[]
 	local sr = selection_range
 	while sr do
-		table.insert(nodes, make_node(sr.range, encoding, sr.parent == nil))
+		table.insert(nodes, make_node(sr.range, encoding, false))
 		sr = sr.parent
 	end
 	return nodes

@@ -128,6 +128,10 @@ The choice comes from the selection range on the cursor and its parent ranges
 as reported by the active language server. Requires a language server that
 supports `selectionRangeProvider` to be attached to the buffer.
 
+Every reported range is a choice, so |TreemonkeyOpts|.include_root has no
+effect. A server may collapse ranges it considers equivalent, which makes the
+outermost range of the chain unreliable as the root node.
+
 *treemonkey.lsp.selection_range.get*
 
 Get a chosen node. See |TreemonkeyOpts| and |TreemonkeyItem| for type
@@ -161,6 +165,9 @@ that supports `foldingRangeProvider` to be attached to the buffer.
 
 Folds are line-oriented, so when a fold omits its `startCharacter` /
 `endCharacter`, the range covers whole lines.
+
+Every fold is a choice, so |TreemonkeyOpts|.include_root has no effect.
+Otherwise a lone fold around the cursor would leave nothing to choose.
 
 *treemonkey.lsp.folding_range.get*
 
@@ -288,7 +295,9 @@ Options to be passed to |treemonkey.get()| or |treemonkey.select()|.
   ---@field ignore_injections? boolean
   ---  Whether or not (default) to ignore injected language
   ---@field include_root? boolean
-  ---  Whether or not (default) to include the root node in a choice
+  ---  Whether or not (default) to include the root node in a choice.
+  ---  Honored by |treemonkey.treesitter| only; the LSP backends treat
+  ---  every reported range as a choice.
   ---@field labels string[]
   ---  A list of labels for selecting nodes. Defaults to a-z
   ---@field steps? 1 | 2
